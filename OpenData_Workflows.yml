@@ -1,0 +1,54 @@
+name: OpenData Workflow for and Metadata manegement
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+ push:
+  tags:
+    - '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  # Job creats a new release
+  create_release:
+    name: Create release on tag push
+    runs-on: ubuntu-latest
+    
+    steps: 
+      - name: Create Release
+        uses: robert-koch-institut/OpenData-Workflows/Create_release_on_tag_push@main
+        with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GITHUB_REF_NAME: ${{github.ref_name}}
+            
+            
+  # Job syncs repository with OpenCoDE.de          
+  sync_github_open_data_repository:         
+    name: Sync Github Open Data repository and its metadata to OpenCoDE.de
+    needs: create_release
+    runs-on: ubuntu-latest
+    
+    steps: 
+      - name: Sync Github Open Data repository
+        uses: robert-koch-institut/OpenData-Workflows/Sync_OpenData_repo_to_OpenCoDE@main
+        with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            OPENCODE_TOKEN: ${{ secrets.OPENCODE_TOKEN }}
+            GROUP_ID: 2781
+            ACCESS_USER: RKIOpenData
+            # REPO_PATH: The repository name must not start or end with a special character and must not contain consecutive special characters
+            ZENODOJSON_PATH: Metadaten/zenodo.json
+  
+  
+  # Job builds and deploys Open Data Website
+  opendata-website:
+    name: Build and deploy OpenData-Website
+    needs: create_release
+    runs-on: ubuntu-latest
+    
+    steps:  
+    - name: Bulid and deploy OpenData Website
+      uses: robert-koch-institut/OpenData-Website@main
+      with:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
