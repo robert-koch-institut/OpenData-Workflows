@@ -1,0 +1,82 @@
+name: Sync an Github repository and its metadata to OpenCoDE.de
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Create release on tag push"]
+    types:
+      - completed
+      
+env:    
+  # OpenCoDE Metadata 
+  GROUP_ID: 2781
+  ACCESS_USER: RKIOpenData
+      
+  # The repositoryname must not start or end with a special character and must not contain consecutive special characters
+  REPO_PATH:  ${{ github.event.repository.name }}
+
+jobs:
+  sync_metadata_to_opencode:
+    name: Sync Github repository metadata to OpenCoDE
+    runs-on: ubuntu-latest
+    outputs:
+      GROUP_PATH: ${{ steps.group_path.outputs.GROUP_PATH }}
+    steps:
+    
+      # Get OpenCoDE group path from the OpenCoDE API
+      - name: Get OpenCoDE group path
+        id: group_path
+        run: | 
+            GROUP_INFO=$(curl \
+              --request GET "https://gitlab.opencode.de/api/v4/groups/$GROUP_ID" \
+              --header "PRIVATE-TOKEN: ${{ secrets.OPENCODE_TOKEN }}")
+            
+            # Write group path to outputs
+            echo "GROUP_PATH="$(echo $GROUP_INFO | jq -r '.path')"" >> $GITHUB_OUTPUT
+      
+      # Get GitHub reposiory metadata from the GitHub API
+      - name: "Get Github metadata of the repository"
+        uses: varunsridharan/action-repository-meta@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      # Create OpenCoDE repository and update repository metadata            
+      - name: Create OpenCoDE repository and update repository metadata
+        run: |
+            # Create OpenCoDE repository
+            curl \
+              --request POST "https://gitlab.opencode.de/api/v4/projects" \
+              --header "PRIVATE-TOKEN: ${{ secrets.OPENCODE_TOKEN }}" \
+              --data-urlencode  "path=${{ env.REPO_PATH }}" \
+              --data-urlencode  "namespace_id=${{ env.GROUP_ID }}"
+              
+            # Update OpenCoDE repository metadata
+            curl \
+              --request PUT "https://gitlab.opencode.de/api/v4/projects/${{ steps.group_path.outputs.GROUP_PATH }}%2F${{ env.REPO_PATH }}" \
+              --header "PRIVATE-TOKEN: ${{ secrets.OPENCODE_TOKEN }}" \
+              --data-urlencode  "description=${{ env.REPOSITORY_DESCRIPTION}}" \
+              --data-urlencode  "topics=$(echo '${{ env.REPOSITORY_TOPICS}}' | jq -r '. | join(",")')" \
+              --data-urlencode  "visibility=public" 
+      
+  sync_data_to_opencode:
+    name: Sync repository Data to OpenCoDE
+    needs: sync_metadata_to_opencode
+    runs-on: ubuntu-latest    
+    steps:
+    
+      # Clone GitHub repository into the action enviroment
+      - name: Checkout Github repository
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+          lfs: 'true'
+          ref: 'main'
+          fetch-depth: '0'
+          
+      # Force push latest repository status to OpenCoDE     
+      - name: Force push latest status to OpenCoDE 
+        run: |
+          git remote add opencode https://${{ env.ACCESS_USER  }}:${{ secrets.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ needs.sync_metadata_to_opencode.outputs.GROUP_PATH }}/${{ env.REPO_PATH }}.git
+          git push opencode -f
+          
+          
