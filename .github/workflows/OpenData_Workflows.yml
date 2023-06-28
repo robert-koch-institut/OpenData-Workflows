@@ -4,12 +4,13 @@ name: OpenData Workflow for and Metadata manegement
 on:
   workflow_call:
     inputs:
-      GITHUB_TOKEN:
-        required: true
-        type: string
       REF_NAME:
         required: true
         type: string
+      secrets:
+        GITHUB_TOKEN:
+          required: true
+          type: string
 
 #      OPENCODE_TOKEN:
 #        required: true
@@ -24,7 +25,7 @@ jobs:
       - name: Create Release
         uses: robert-koch-institut/OpenData-Workflows/Create_release_on_tag_push@main
         with:
-          GITHUB_TOKEN: ${{inputs.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           REF_NAME: ${{inputs.REF}}
             
             
