@@ -22,7 +22,7 @@ jobs:
     
     steps:
       - name: debug
-        run: echo ${{secrets.GH_TOKEN}}
+        run: echo ${{inputs.REF_NAME}}
       - name: Create Release
         env:
           GH_TOKEN: ${{secrets.GH_TOKEN}}
