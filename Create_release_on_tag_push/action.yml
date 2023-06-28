@@ -8,9 +8,9 @@ runs:
       uses: actions/checkout@v3
 
     - name: Create Release
-      uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ github.token }}
+      uses: actions/create-release@v1
       with:
         tag_name: ${{github.ref_name}}
         release_name: Datenstand ${{github.ref_name}}
