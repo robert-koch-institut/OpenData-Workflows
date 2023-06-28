@@ -22,7 +22,6 @@ jobs:
         uses: robert-koch-institut/OpenData-Workflows/Create_release_on_tag_push@main
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            GITHUB_REF_NAME: ${{github.ref_name}}
             
             
   # # Job syncs repository with OpenCoDE.de
