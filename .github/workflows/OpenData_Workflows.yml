@@ -7,10 +7,10 @@ on:
       REF_NAME:
         required: true
         type: string
-      secrets:
-        GITHUB_TOKEN:
-          required: true
-          type: string
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+        type: string
 
 #      OPENCODE_TOKEN:
 #        required: true
