@@ -11,8 +11,6 @@ runs:
       uses: actions/checkout@v3
 
     - name: Create Release
-      env:
-        test: ${{env.GH_TOKEN}}
       uses: actions/create-release@v1
       with:
         tag_name: ${{inputs.REF_NAME}}
