@@ -10,7 +10,6 @@ on:
     secrets:
       GITHUB_TOKEN:
         required: true
-        type: string
 
 #      OPENCODE_TOKEN:
 #        required: true
