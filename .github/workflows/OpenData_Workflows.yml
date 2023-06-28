@@ -4,7 +4,7 @@ name: OpenData Workflow for and Metadata manegement
 on:
   workflow_call:
     secrets:
-      GH_TOKEN:
+      GITHUB_TOKEN:
         required: true
 #      OPENCODE_TOKEN:
 #        required: true
