@@ -22,9 +22,10 @@ jobs:
     
     steps: 
       - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
         uses: robert-koch-institut/OpenData-Workflows/Create_release_on_tag_push@main
         with:
-          GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
           REF_NAME: ${{inputs.REF}}
             
             
