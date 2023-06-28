@@ -3,6 +3,14 @@ name: OpenData Workflow for and Metadata manegement
 # Controls when the action will run. 
 on:
   workflow_call:
+    inputs:
+      GITHUB_TOKEN:
+        description: Github Token
+        required: true
+      REF_NAME:
+        description: ref
+        required: true
+
 #      OPENCODE_TOKEN:
 #        required: true
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -15,6 +23,9 @@ jobs:
     steps: 
       - name: Create Release
         uses: robert-koch-institut/OpenData-Workflows/Create_release_on_tag_push@main
+        with:
+          GITHUB_TOKEN: ${{inputs.GITHUB_TOKEN}}
+          REF_NAME: ${{inputs.REF}}
             
             
   # # Job syncs repository with OpenCoDE.de
