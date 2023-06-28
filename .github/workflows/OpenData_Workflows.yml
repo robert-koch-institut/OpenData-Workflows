@@ -20,7 +20,9 @@ jobs:
     name: Create release on tag push
     runs-on: ubuntu-latest
     
-    steps: 
+    steps:
+      - name: debug
+        run: echo ${{secrets.GH_TOKEN}}
       - name: Create Release
         env:
           GH_TOKEN: ${{secrets.GH_TOKEN}}
