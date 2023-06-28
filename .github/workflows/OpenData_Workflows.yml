@@ -3,8 +3,6 @@ name: OpenData Workflow for and Metadata manegement
 # Controls when the action will run. 
 on:
   workflow_call:
-    inputs:
-
     secrets:
       GH_TOKEN:
         required: true
