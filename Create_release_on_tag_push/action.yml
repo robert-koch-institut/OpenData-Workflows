@@ -1,9 +1,6 @@
 name: Create release on tag push
 description: test
 inputs:
-  GITHUB_TOKEN:
-    description: Github token from the caller action
-    required: true
   REF_NAME:
     description: ref name
     required: true
@@ -15,7 +12,7 @@ runs:
 
     - name: Create Release
       env:
-        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        GITHUB_TOKEN: "$GITHUB_TOKEN"
       uses: actions/create-release@v1
       with:
         tag_name: ${{inputs.REF_NAME}}
