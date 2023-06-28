@@ -12,7 +12,7 @@ runs:
 
     - name: Create Release
       env:
-        GITHUB_TOKEN: ${{GITHUB_TOKEN}}
+        GITHUB_TOKEN: ${{env.GITHUB_TOKEN}}
       uses: actions/create-release@v1
       with:
         tag_name: ${{inputs.REF_NAME}}
