@@ -8,6 +8,8 @@ on:
 #        required: true
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  env:
+    ACTIONS_RUNNER_DEBUG: true
   # Job creats a new release
   create_release:
     name: Create release on tag push
