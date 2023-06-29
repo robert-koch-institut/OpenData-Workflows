@@ -3,10 +3,6 @@ name: OpenData Workflow for and Metadata manegement
 # Controls when the action will run. 
 on:
   workflow_call:
-    inputs:
-      REF_NAME:
-        required: true
-        type: string
 
 #      OPENCODE_TOKEN:
 #        required: true
