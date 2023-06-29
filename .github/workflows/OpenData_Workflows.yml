@@ -27,7 +27,7 @@ jobs:
     name: push ttl to GovData
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
     steps:
       - name: run GovData Action
         uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_Govdata@main
