@@ -29,6 +29,10 @@ runs:
       run: cp ${{ inputs.source_file }} ${{inputs.destination_file_name}}
       shell: bash
 
+    - name: debug
+      run: echo ${{env.GITHUB_TOKEN}}
+      shell: bash
+
     - name: Push dataset ttl to Govdata repository
       id: pushStep1
       continue-on-error: true
