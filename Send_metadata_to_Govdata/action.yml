@@ -40,12 +40,12 @@ runs:
       env:
         API_TOKEN_GITHUB: ${{ env.GITHUB_TOKEN }}
       with:
-        source_file: 'Metadaten/${{ github.event.repository.name }}.ttl'
-        destination_repo: 'robert-koch-institut/Metadaten_fuer_GovData'
-        destination_folder: 'Datensaetze'
-        commit_message: 'adding ${{ github.event.repository.name }}.ttl'
-        user_email: 'opendata@rki.de'
-        user_name: 'RKIOpenData'
+        source_file: ${{inputs.destination_file_name}}
+        destination_repo: ${{inputs.destination_repo}}
+        destination_folder: ${{inputs.destination_folder}}
+        commit_message: 'adding ${{inputs.destination_file_name}}'
+        user_email: ${{inputs.user_email}}
+        user_name: ${{inputs.user_name}}
 
     - name: Retry push dataset ttl to Govdata repository
       id: pushStep2
