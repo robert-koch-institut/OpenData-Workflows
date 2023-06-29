@@ -3,10 +3,10 @@ description: sends *.ttl metadata to a separate repository
 inputs:
   source_file:
     description: 'filepath and name send needs to be uploaded to the other repo'
-    default: 'Metadaten/${{ github.event.repository.name }}.ttl'
+    default: 'Metadaten/govdata.ttl'
   destination_file_name:
     description: 'name of the file in the new repo'
-    default: 'Metadaten/${{ github.event.repository.name }}.ttl'
+    default: 'github.event.repository.name }}.ttl'
   destination_repo:
     description: 'repo the file source file should be copied to'
     default: 'knutator2/Metadaten_Test'
