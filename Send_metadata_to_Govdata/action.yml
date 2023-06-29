@@ -18,7 +18,7 @@ inputs:
     default: 'opendata@rki.de'
   user_name:
     description: 'user name to put into the commit'
-    default: 'RKIOpenData'
+    default: 'knutator2'
 runs:
   using: "composite"
   steps:
