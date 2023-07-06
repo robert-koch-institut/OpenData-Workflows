@@ -9,28 +9,27 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # Job creates a new release
-  create_release:
-    env:
-      ACTIONS_RUNNER_DEBUG: true
-    name: Create release on tag push
-    runs-on: ubuntu-latest
-    steps:
-      - name: debug
-        run: echo ${{secrets.GITHUB_TOKEN}}
-      - name: Create Release
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        uses: robert-koch-institut/OpenData-Workflows/Create_release_on_tag_push@main
-        with:
-          REF_NAME: ${{github.ref_name}}
-  #push_govdata:
-  #  name: push ttl to GovData
+  #create_release:
+  #  name: Create release on tag push
   #  runs-on: ubuntu-latest
-  #  env:
-  #    GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
   #  steps:
-  #    - name: run GovData Action
-  #      uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_Govdata@main
+  #    - name: debug
+  #      run: echo ${{secrets.GITHUB_TOKEN}}
+  #    - name: Create Release
+  #      env:
+  #        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  #      uses: robert-koch-institut/OpenData-Workflows/Create_release_on_tag_push@main
+  #      with:
+  #        REF_NAME: ${{github.ref_name}}
+  push_govdata:
+    name: push ttl to GovData
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
+      ACTIONS_RUNNER_DEBUG: true
+    steps:
+      - name: run GovData Action
+        uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_Govdata@main
             
   # # Job syncs repository with OpenCoDE.de
   # #sync_github_open_data_repository:
@@ -51,13 +50,13 @@ jobs:
   
   
   # Job builds and deploys Open Data Website
-  opendata-website:
-    name: Build and deploy OpenData-Website
-    needs: create_release
-    runs-on: ubuntu-latest
+  #opendata-website:
+  #  name: Build and deploy OpenData-Website
+  #  needs: create_release
+  #  runs-on: ubuntu-latest
 
-    steps:
-    - name: Bulid and deploy OpenData Website
-      uses: robert-koch-institut/OpenData-Website@main
-      with:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #  steps:
+  #  - name: Bulid and deploy OpenData Website
+  #    uses: robert-koch-institut/OpenData-Website@main
+  #    with:
+  #      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
