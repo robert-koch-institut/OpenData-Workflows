@@ -4,6 +4,9 @@ name: OpenData Workflow for and Metadata management
 on:
   workflow_call:
 
+permissions:
+  contents: write
+
 #      OPENCODE_TOKEN:
 #        required: true
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
