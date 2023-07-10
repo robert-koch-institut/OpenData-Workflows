@@ -13,7 +13,7 @@ runs:
     - name: Create Release
       uses: actions/create-release@v1
       with:
-        tag_name: test
+        tag_name: test1
         release_name: Datenstand ${{inputs.REF_NAME}}
         body: Datenstand ${{inputs.REF_NAME}} inklusive aktualisierter Metadaten
         draft: false
