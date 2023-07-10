@@ -28,7 +28,7 @@ jobs:
     name: push ttl to GovData
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
       ACTIONS_RUNNER_DEBUG: true
     steps:
       - name: run GovData Action
