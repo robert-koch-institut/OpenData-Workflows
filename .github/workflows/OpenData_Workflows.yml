@@ -40,8 +40,8 @@ jobs:
   #      uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_Govdata@main
             
   # # Job syncs repository with OpenCoDE.de
-  # #sync_github_open_data_repository:
-    name: "Sync Github Open Data repository and its metadata to OpenCoDE.de"
+  sync_github_open_data_repository:
+    name: Sync Github Open Data repository and its metadata to OpenCoDE.de
     needs: create_release
     runs-on: ubuntu-latest
 
