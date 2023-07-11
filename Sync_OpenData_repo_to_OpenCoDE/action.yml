@@ -64,7 +64,7 @@ runs:
                   
           # Update OpenCoDE repository metadata
           response=$(curl \
-            --request PUT "https://gitlab.opencode.de/api/v4/projects/${{ steps.group_path.outputs.GROUP_PATH }}%2F${{ input.REPO_PATH }}" \
+            --request PUT "https://gitlab.opencode.de/api/v4/projects/${{ steps.group_path.outputs.GROUP_PATH }}%2F${{ inputs.REPO_PATH }}" \
             --header "PRIVATE-TOKEN: ${{ secrets.OPENCODE_TOKEN }}" \
             --data "name=${{ env.REPO_NAME }}" \
             --data "description=${{ env.DESCRIPTION }}" \
