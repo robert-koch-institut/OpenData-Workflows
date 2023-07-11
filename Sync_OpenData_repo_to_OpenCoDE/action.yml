@@ -58,9 +58,9 @@ runs:
         # Create OpenCoDE repository
         curl \
           --request POST "https://gitlab.opencode.de/api/v4/projects" \
-          --header "PRIVATE-TOKEN: ${{ input.OPENCODE_TOKEN }}" \
-          --data-urlencode  "path=${{ input.REPO_PATH }}" \
-          --data-urlencode  "namespace_id=${{ input.GROUP_ID }}"
+          --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}" \
+          --data-urlencode  "path=${{ inputs.REPO_PATH }}" \
+          --data-urlencode  "namespace_id=${{ inputs.GROUP_ID }}"
                   
           # Update OpenCoDE repository metadata
           response=$(curl \
@@ -83,7 +83,7 @@ runs:
     # Force push latest Github Open Data repository status to OpenCoDE
     - name: Force push latest status to OpenCoDE
       run: |
-        git remote add opencode https://${{ input.ACCESS_USER  }}:${{ input.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ needs.sync_metadata_to_opencode.outputs.GROUP_PATH }}/${{ input.REPO_PATH }}.git
+        git remote add opencode https://${{ inputs.ACCESS_USER  }}:${{ inputs.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ needs.sync_metadata_to_opencode.outputs.GROUP_PATH }}/${{ inputs.REPO_PATH }}.git
         git push opencode -f
         git push opencode -f --tags
       shell: bash
