@@ -51,8 +51,8 @@ jobs:
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             OPENCODE_TOKEN: ${{ secrets.OPENCODE_TOKEN }}
-            GROUP_ID: OC000019857881
-            ACCESS_USER: Knut Perseke
+            GROUP_ID: knutperseke
+            ACCESS_USER: knutperseke
             # REPO_PATH: The repository name must not start or end with a special character and must not contain consecutive special characters
             ZENODOJSON_PATH: Metadaten/zenodo.json
   
