@@ -36,7 +36,7 @@ runs:
         GROUP_INFO=$(curl \
           --request GET "https://gitlab.opencode.de/api/v4/groups/${{inputs.GROUP_ID }}" \
           --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}") 
-        echo "GROUP_PATH=$(echo $GROUP_INFO | jq -r '.path')" >> $GITHUB_OUTPUT
+        echo "GROUP_PATH="$(echo $GROUP_INFO | jq -r '.path')"" >> $GITHUB_ENV
       shell: bash
 
     - name: Get zenodo.json metadata from Github Open Data repository
@@ -64,7 +64,7 @@ runs:
                   
           # Update OpenCoDE repository metadata
           response=$(curl \
-            --request PUT "https://gitlab.opencode.de/api/v4/projects/${{ steps.group_path.outputs.GROUP_PATH }}%2F${{ inputs.REPO_PATH }}" \
+            --request PUT "https://gitlab.opencode.de/api/v4/projects/${{ env.GROUP_PATH }}%2F${{ inputs.REPO_PATH }}" \
             --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}" \
             --data "name=${{ env.REPO_NAME }}" \
             --data "description=${{ env.DESCRIPTION }}" \
@@ -83,7 +83,7 @@ runs:
     # Force push latest Github Open Data repository status to OpenCoDE
     - name: Force push latest status to OpenCoDE
       run: |
-        git remote add opencode https://${{ inputs.ACCESS_USER  }}:${{ inputs.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ steps.group_path.outputs.GROUP_PATH }}/${{ inputs.REPO_PATH }}.git
+        git remote add opencode https://${{ inputs.ACCESS_USER  }}:${{ inputs.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ env.GROUP_PATH }}/${{ inputs.REPO_PATH }}.git
         git push opencode -f
         git push opencode -f --tags
       shell: bash
