@@ -36,7 +36,7 @@ runs:
         GROUP_INFO=$(curl \
           --request GET "https://gitlab.opencode.de/api/v4/groups/${{inputs.GROUP_ID }}" \
           --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}") 
-        echo "GROUP_PATH="$(echo $GROUP_INFO | jq -r '.path')"" >> $GITHUB_OUTPUT
+        echo "GROUP_PATH=$(echo $GROUP_INFO | jq -r '.path')" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Get zenodo.json metadata from Github Open Data repository
