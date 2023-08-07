@@ -3,7 +3,17 @@ name: OpenData Workflow for and Metadata management
 # Controls when the action will run. 
 on:
   workflow_call:
-
+    inputs:
+      OPENCODE_GROUPID:
+        description: ID of the group at OpenCode to publish the repo
+        type: string
+        required: false
+        default: 2781
+      OPENCODE_ACCESS_USER:
+       description: Name of the user at OpenCode to publish the repo
+       type: string
+       required: false
+       default: RKIOpenData
     secrets:
       GH_TOKEN:
         required: true
@@ -51,8 +61,8 @@ jobs:
         with:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             OPENCODE_TOKEN: ${{ secrets.OPENCODE_TOKEN }}
-            GROUP_ID: 4116
-            ACCESS_USER: knutperseke
+            GROUP_ID: ${{inputs.OPENCODE_GROUPID}}
+            ACCESS_USER: ${{inputs.OPENCODE_ACCESS_USER}}
             # REPO_PATH: The repository name must not start or end with a special character and must not contain consecutive special characters
             ZENODOJSON_PATH: Metadaten/zenodo.json
   
