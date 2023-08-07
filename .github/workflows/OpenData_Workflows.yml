@@ -69,13 +69,12 @@ jobs:
   
   
   # Job builds and deploys Open Data Website
-  #opendata-website:
-  #  name: Build and deploy OpenData-Website
-  #  needs: create_release
-  #  runs-on: ubuntu-latest
-
-  #  steps:
-  #  - name: Bulid and deploy OpenData Website
-  #    uses: robert-koch-institut/OpenData-Website@main
-  #    with:
-  #      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  opendata-website:
+    name: Build and deploy OpenData-Website
+    needs: create_release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bulid and deploy OpenData Website
+        uses: robert-koch-institut/OpenData-Website@main
+        with:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
