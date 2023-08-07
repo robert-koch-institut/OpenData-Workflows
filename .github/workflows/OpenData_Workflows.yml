@@ -39,15 +39,15 @@ jobs:
         uses: robert-koch-institut/OpenData-Workflows/Create_release_on_tag_push@main
         with:
           REF_NAME: ${{github.ref_name}}
-  # push_govdata:
-  #  name: push ttl to GovData
-  #  runs-on: ubuntu-latest
-  #  env:
-  #    GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
-  #    ACTIONS_RUNNER_DEBUG: true
-  #  steps:
-  #    - name: run GovData Action
-  #      uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_Govdata@main
+  push_govdata:
+    name: push ttl to GovData
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
+      ACTIONS_RUNNER_DEBUG: true
+    steps:
+      - name: run GovData Action
+        uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_Govdata@main
             
   # # Job syncs repository with OpenCoDE.de
   sync_github_open_data_repository:
