@@ -38,8 +38,8 @@ runs:
     - name: Check for existing identifier
       id: nfdi4HealthExistingIdentifier
       run: |
-        echo "${{steps.nfdi4healthData.outputs.jsonContent}}"
-        EXISTING = echo '${{steps.nfdi4healthData.outputs.jsonContent}}' | jq '.resource.resource_identifier' == null
+        echo ${{steps.nfdi4healthData.outputs.jsonContent}}
+        EXISTING = echo ${{steps.nfdi4healthData.outputs.jsonContent}} | jq '.resource.resource_identifier' == null
         echo "$EXISTING"
         echo "existing=$EXISTING" >> $GITHUB_OUTPUT
       shell: bash
