@@ -1,0 +1,78 @@
+name: Push metadata to nfdi4Health
+description: "Pushes converted metadata to the Nfdi4Health Studyhub"
+inputs:
+  nfdi4health_client_id:
+    description: id of the client to connect to the nfdi4health api
+    required: true
+  nfdi4health_client_secret:
+    description: secret of the client to connect to the nfdi4health api
+    required: true
+  nfdi4health_metadata_path:
+    description: path to find the metadata for nfdi4health
+    default: "Metadaten/nfdi4health.json"
+  nfdi4health_authorization_endpoint:
+    description: api endpoint to send credentials to get a valid token
+    default: "https://sso.studyhub.nfdi4health.de/realms/nfdi4health/protocol/openid-connect/token"
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3.0.2
+      with:
+        token: ${{secrets.GITHUB_TOKEN}}
+
+    - name: Read nfdi4health.json content
+      id: nfdi4healthData
+      run: |
+        content=`cat ${{inputs.nfdi4health_metadata_path}}`
+        # the following lines are only required for multi line json
+        content=${content//%/%25}
+        content=${content//$n/%0A}
+        content=${content//$r/%0D}
+        # end of optional handling for multi line json
+        echo "jsonContent<<EOF"$'\n'"$content"$'\n'EOF >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Check for existing identifier
+      id: nfdi4HealthExistingIdentifier
+      run: |
+        EXISTING = fromJson(nfdi4healthData.outputs.jsonContent).resource.resource_identifier == null
+        echo "existing=$EXISTING" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Get Api Token
+      id: nfdi4healthToken
+      run: |
+        TOKEN=$(curl --location '${{inputs.nfdi4health_authorization_endpoint}}' \
+                  --header 'Content-Type: application/x-www-form-urlencoded' \
+                  --data-urlencode 'client_id=${{inputs.nfdi4health_client_id}}' \
+                  --data-urlencode 'client_secret=${{inputs.nfdi4health_client_secret}}' \
+                  --data-urlencode 'grant_type=client_credentials' | jq --raw-output '.access_token')
+        echo "token=$TOKEN" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Create or modify NFDI4Health resource
+      id: createOrModify
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: 'https://csh.nfdi4health.de/api/resource/'
+        method: 'POST'
+        customHeaders: '{"Content-Type": "application/json", "Accept": "application/json"}'
+        bearerToken: ${{steps.nfdi4healthToken.outputs.token}}
+        # bearerToken: ${{needs.getToken.outputs.token}}
+        data: ${{steps.nfdi4healthData.outputs.jsonContent}}
+
+    - name: Write id to nfdi4health.json
+      if: ${{steps.nfdi4HealthExistingIdentifier.outputs.existing}}
+      run: |
+        echo "`jq '.resource.resource_identifier=${{steps.create.outputs.response}}' Metadaten/nfdi4health.json `" > Metadaten/nfdi4health.json
+      shell: bash
+
+    - name: Push nfdi4health.json
+      if: ${{steps.nfdi4HealthExistingIdentifier.outputs.existing}}
+      uses: EndBug/add-and-commit@v9
+      with:
+        message: 'Updated nfdi4health.json with API response'
+        add: 'Metadaten/nfdi4health.json'
+
+
+

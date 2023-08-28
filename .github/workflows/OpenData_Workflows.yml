@@ -84,6 +84,8 @@ jobs:
       - name: push metadata
         uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_NFDI4Health@main
         with:
+          nfdi4health_client_id: {{secrets.NFDI4HEALTH_CLIENT_ID}}
+          nfdi4health_client_secret: {{secrets.NFDI4HEALTH_CLIENT_SECRET}}
 
   # Job builds and deploys Open Data Website
   opendata-website:
