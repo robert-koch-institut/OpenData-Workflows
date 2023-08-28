@@ -39,7 +39,6 @@ runs:
       id: nfdi4HealthExistingIdentifier
       run: |
         EXISTING=echo '${{fromJson(steps.nfdi4healthData.outputs.jsonContent).resource.resource_identifier == null}}
-        echo "$EXISTING"
         echo "existing=$EXISTING" >> $GITHUB_OUTPUT
       shell: bash
 
