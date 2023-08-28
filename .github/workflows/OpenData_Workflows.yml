@@ -70,12 +70,12 @@ jobs:
       - name: Sync Github Open Data repository
         uses: robert-koch-institut/OpenData-Workflows/Sync_OpenData_repo_to_OpenCoDE@main
         with:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            OPENCODE_TOKEN: ${{ secrets.OPENCODE_TOKEN }}
-            GROUP_ID: ${{inputs.OPENCODE_GROUPID}}
-            ACCESS_USER: ${{inputs.OPENCODE_ACCESS_USER}}
-            # REPO_PATH: The repository name must not start or end with a special character and must not contain consecutive special characters
-            ZENODOJSON_PATH: ${{inputs.OPENCODE_ZENODOJSON_PATH}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENCODE_TOKEN: ${{ secrets.OPENCODE_TOKEN }}
+          GROUP_ID: ${{inputs.OPENCODE_GROUPID}}
+          ACCESS_USER: ${{inputs.OPENCODE_ACCESS_USER}}
+          # REPO_PATH: The repository name must not start or end with a special character and must not contain consecutive special characters
+          ZENODOJSON_PATH: ${{inputs.OPENCODE_ZENODOJSON_PATH}}
   
   push_to_nfdi4health:
     name: push metadata to nfdi4health studyhub
@@ -84,8 +84,8 @@ jobs:
       - name: push metadata
         uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_NFDI4Health@main
         with:
-          nfdi4health_client_id: {{secrets.NFDI4HEALTH_CLIENT_ID}}
-          nfdi4health_client_secret: {{secrets.NFDI4HEALTH_CLIENT_SECRET}}
+          nfdi4health_client_id: ${{secrets.NFDI4HEALTH_CLIENT_ID}}
+          nfdi4health_client_secret: ${{secrets.NFDI4HEALTH_CLIENT_SECRET}}
 
   # Job builds and deploys Open Data Website
   opendata-website:
