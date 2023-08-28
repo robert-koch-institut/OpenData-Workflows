@@ -13,12 +13,15 @@ inputs:
   nfdi4health_authorization_endpoint:
     description: api endpoint to send credentials to get a valid token
     default: "https://sso.studyhub.nfdi4health.de/realms/nfdi4health/protocol/openid-connect/token"
+  github_token:
+    description: token to access the current repository
+    required: true
 runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v3.0.2
       with:
-        token: ${{secrets.GITHUB_TOKEN}}
+        token: ${{inputs.github_token}}
 
     - name: Read nfdi4health.json content
       id: nfdi4healthData
