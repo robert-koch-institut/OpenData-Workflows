@@ -19,6 +19,9 @@ inputs:
   user_name:
     description: 'user name to put into the commit'
     default: 'knutator2'
+  github_repo_token:
+    description: 'token to access remote github repositories'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -29,16 +32,12 @@ runs:
       run: cp ${{ inputs.source_file }} ${{inputs.destination_file_name}}
       shell: bash
 
-    - name: debug
-      run: echo ${{env.GITHUB_TOKEN}}
-      shell: bash
-
     - name: Push dataset ttl to Govdata repository
       id: pushStep1
       continue-on-error: true
       uses: dmnemec/copy_file_to_another_repo_action@main
       env:
-        API_TOKEN_GITHUB: ${{ env.GITHUB_TOKEN }}
+        API_TOKEN_GITHUB: ${{ inputs.github_repo_token }}
       with:
         source_file: ${{inputs.destination_file_name}}
         destination_repo: ${{inputs.destination_repo}}
