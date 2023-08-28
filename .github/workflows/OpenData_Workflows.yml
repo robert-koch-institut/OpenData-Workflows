@@ -89,7 +89,7 @@ jobs:
 
   # Job builds and deploys Open Data Website
   opendata-website:
-    namedoo: Build and deploy OpenData-Website
+    name: Build and deploy OpenData-Website
     needs: create_release
     runs-on: ubuntu-latest
     steps:
