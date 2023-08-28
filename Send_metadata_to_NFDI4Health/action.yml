@@ -19,7 +19,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v3.0.2
+    - uses: actions/checkout@v3
       with:
         token: ${{inputs.github_token}}
 
@@ -38,6 +38,7 @@ runs:
     - name: Check for existing identifier
       id: nfdi4HealthExistingIdentifier
       run: |
+        echo "${{steps.nfdi4healthData.outputs.jsonContent}}"
         EXISTING = echo '${{steps.nfdi4healthData.outputs.jsonContent}}' | jq '.resource.resource_identifier' == null
         echo "$EXISTING"
         echo "existing=$EXISTING" >> $GITHUB_OUTPUT
