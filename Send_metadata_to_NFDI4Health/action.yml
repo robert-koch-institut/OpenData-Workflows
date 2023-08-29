@@ -47,7 +47,7 @@ runs:
         echo 'test'
         echo $(curl -X POST --location '${{inputs.nfdi4health_authorization_endpoint}}' \
                   --header 'Content-Type: application/x-www-form-urlencoded' \
-                  --data-urlencode 'client_id=test' \
+                  --data-urlencode 'client_id=${{inputs.nfdi4health_client_id}}' \
                   --data-urlencode 'client_secret=${{inputs.nfdi4health_client_secret}}' \
                   --data-urlencode 'grant_type=client_credentials')
       shell: bash
