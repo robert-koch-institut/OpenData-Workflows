@@ -18,7 +18,7 @@ inputs:
     required: true
   nfdi4health_base_url:
     description: Base URL for the NFDI4Health Studyhub
-    default: "https://master.csh.qa.km.k8s.zbmed.de/api"
+    default: "https://master.csh.qa.km.k8s.zbmed.de/api/"
 runs:
   using: "composite"
   steps:
