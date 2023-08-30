@@ -41,7 +41,7 @@ runs:
     - name: Check for existing identifier
       id: nfdi4HealthExistingIdentifier
       run: |
-        EXISTING=echo '${{fromJson(steps.nfdi4healthData.outputs.jsonContent).resource.resource_identifier == null}}'
+        EXISTING='${{fromJson(steps.nfdi4healthData.outputs.jsonContent).resource.resource_identifier == null}}'
         echo "existing=$EXISTING" >> $GITHUB_OUTPUT
       shell: bash
 
@@ -78,13 +78,13 @@ runs:
         data: ${{steps.nfdi4healthData.outputs.jsonContent}}
 
     - name: Write id to nfdi4health.json
-      if: ${{steps.nfdi4HealthExistingIdentifier.outputs.existing}}
+      if: ${{steps.nfdi4HealthExistingIdentifier.outputs.existing == 'false'}}
       run: |
         echo "`jq '.resource.resource_identifier=${{steps.create.outputs.response}}' Metadaten/nfdi4health.json `" > Metadaten/nfdi4health.json
       shell: bash
 
     - name: Push nfdi4health.json
-      if: ${{steps.nfdi4HealthExistingIdentifier.outputs.existing}}
+      if: ${{steps.nfdi4HealthExistingIdentifier.outputs.existing == 'false'}}
       uses: EndBug/add-and-commit@v9
       with:
         message: 'Updated nfdi4health.json with API response'
