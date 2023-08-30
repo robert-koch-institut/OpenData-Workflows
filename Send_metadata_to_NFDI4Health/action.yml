@@ -16,6 +16,9 @@ inputs:
   github_token:
     description: token to access the current repository
     required: true
+  nfdi4health_base_url:
+    description: Base URL for the NFDI4Health Studyhub
+    default: "https://master.csh.qa.km.k8s.zbmed.de/api"
 runs:
   using: "composite"
   steps:
@@ -67,7 +70,7 @@ runs:
       id: createOrModify
       uses: fjogeleit/http-request-action@v1
       with:
-        url: 'https://csh.nfdi4health.de/api/resource/'
+        url: ${{format('{0}{1}', inputs.nfdi4health_base_url, 'resource/')}}
         method: 'POST'
         customHeaders: '{"Content-Type": "application/json", "Accept": "application/json"}'
         bearerToken: ${{steps.nfdi4healthToken.outputs.token}}
