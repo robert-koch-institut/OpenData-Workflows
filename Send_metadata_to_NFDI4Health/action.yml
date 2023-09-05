@@ -81,7 +81,7 @@ runs:
       #if: ${{steps.nfdi4HealthExistingIdentifier.outputs.unpublished == 'true'}}
       if: ${{fromJson(steps.nfdi4healthData.outputs.jsonContent).resource.resource_identifier == null}}
       run: |
-        echo "`jq '.resource.resource_identifier=${{steps.create.outputs.response}}' Metadaten/nfdi4health.json `" > Metadaten/nfdi4health.json
+        echo "`jq '.resource.resource_identifier=${{steps.createOrModify.outputs.response}}' Metadaten/nfdi4health.json `" > Metadaten/nfdi4health.json
       shell: bash
 
     - name: Push nfdi4health.json
