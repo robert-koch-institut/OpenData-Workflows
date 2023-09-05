@@ -78,6 +78,7 @@ runs:
         data: ${{steps.nfdi4healthData.outputs.jsonContent}}
 
     - name: Write id to nfdi4health.json
+      id: updateMetadata
       #if: ${{steps.nfdi4HealthExistingIdentifier.outputs.unpublished == 'true'}}
       if: ${{fromJson(steps.nfdi4healthData.outputs.jsonContent).resource.resource_identifier == null}}
       run: |
@@ -85,7 +86,7 @@ runs:
       shell: bash
 
     - name: Push nfdi4health.json
-      if: ${{steps.nfdi4HealthExistingIdentifier.outputs.unpublished == 'true'}}
+      if: ${{steps.updateMetadata.outcome == 'success'}}
       uses: EndBug/add-and-commit@v9
       with:
         message: 'Updated nfdi4health.json with API response'
