@@ -47,7 +47,7 @@ runs:
           --header "Accept: application/vnd.github.mercy-preview+json" \
           | jq -r '.download_url')
 
-    #     # Add Zenodo metadata to enviroment
+         # Add Zenodo metadata to enviroment
          echo "REPO_NAME="$(curl $ZENODOJSON_URL | jq -r '.title')"" >> $GITHUB_ENV
          echo "DESCRIPTION="$(curl $ZENODOJSON_URL | jq -r '.description'| head -c 2000)"" >> $GITHUB_ENV
          echo "TOPICS="$(curl $ZENODOJSON_URL| jq -r '.keywords | join(",")')"" >> $GITHUB_ENV
