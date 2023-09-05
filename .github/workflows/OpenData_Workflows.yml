@@ -68,19 +68,19 @@ jobs:
  #         destination_repo: ${{inputs.GOVDATA_DESTINATION_REPO}}
             
   # # Job syncs repository with OpenCoDE.de
-  sync_to_open_code:
-    name: Sync Github Open Data repository and its metadata to OpenCoDE.de
-    runs-on: ubuntu-latest
-    steps:
-      - name: Sync Github Open Data repository
-        uses: robert-koch-institut/OpenData-Workflows/Sync_OpenData_repo_to_OpenCoDE@main
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENCODE_TOKEN: ${{ secrets.OPENCODE_TOKEN }}
-          GROUP_ID: ${{inputs.OPENCODE_GROUPID}}
-          ACCESS_USER: ${{inputs.OPENCODE_ACCESS_USER}}
+  #sync_to_open_code:
+  #  name: Sync Github Open Data repository and its metadata to OpenCoDE.de
+  #  runs-on: ubuntu-latest
+  # steps:
+  #   - name: Sync Github Open Data repository
+  #      uses: robert-koch-institut/OpenData-Workflows/Sync_OpenData_repo_to_OpenCoDE@main
+  #      with:
+  #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #        OPENCODE_TOKEN: ${{ secrets.OPENCODE_TOKEN }}
+  #        GROUP_ID: ${{inputs.OPENCODE_GROUPID}}
+  #        ACCESS_USER: ${{inputs.OPENCODE_ACCESS_USER}}
 #          # REPO_PATH: The repository name must not start or end with a special character and must not contain consecutive special characters
-          ZENODOJSON_PATH: ${{inputs.OPENCODE_ZENODOJSON_PATH}}
+   #       ZENODOJSON_PATH: ${{inputs.OPENCODE_ZENODOJSON_PATH}}
   
 #  push_to_nfdi4health:
 #    name: push metadata to nfdi4health studyhub
@@ -94,12 +94,12 @@ jobs:
 #          github_token: ${{secrets.GITHUB_TOKEN}}
 
 #  # Job builds and deploys Open Data Website
-#  opendata-website:
-#    name: Build and deploy OpenData-Website
-#    needs: create_release
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Bulid and deploy OpenData Website
-#        uses: robert-koch-institut/OpenData-Website@main
-#        with:
-#          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  opendata-website:
+    name: Build and deploy OpenData-Website
+    needs: create_release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bulid and deploy OpenData Website
+        uses: robert-koch-institut/OpenData-Website@main
+        with:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
