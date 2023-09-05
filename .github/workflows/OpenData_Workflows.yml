@@ -96,7 +96,7 @@ jobs:
 #  # Job builds and deploys Open Data Website
   opendata-website:
     name: Build and deploy OpenData-Website
-    needs: create_release
+    #needs: create_release
     runs-on: ubuntu-latest
     steps:
       - name: Bulid and deploy OpenData Website
