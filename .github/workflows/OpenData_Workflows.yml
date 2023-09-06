@@ -25,7 +25,7 @@ on:
         required: false
         default: knutator/Metadaten_Test
     secrets:
-      GH_TOKEN:
+      GOVDATA_GITHUB_TOKEN:
         description: Token to handle other repositories the the current one (e.g. repo where Govdata is pushed to)
         required: true
       OPENCODE_TOKEN:
@@ -58,13 +58,11 @@ jobs:
   push_govdata:
     name: push ttl to GovData
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
     steps:
       - name: run GovData Action
         uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_Govdata@main
         with:
-          github_repo_token: ${{secrets.GH_TOKEN}}
+          govdata_github_token: ${{secrets.GOVDATA_GITHUB_TOKEN}}
           destination_repo: ${{inputs.GOVDATA_DESTINATION_REPO}}
             
   # # Job syncs repository with OpenCoDE.de
