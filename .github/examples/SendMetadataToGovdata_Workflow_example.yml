@@ -1,0 +1,39 @@
+on:
+  workflow_call:
+    inputs:
+      OPENCODE_GROUPID:
+        description: ID of the group at OpenCode to publish the repo
+        type: string
+        required: false
+        default: 2781
+      OPENCODE_ACCESS_USER:
+        description: Name of the user at OpenCode to publish the repo
+        type: string
+        required: false
+        default: RKIOpenData
+      OPENCODE_ZENODOJSON_PATH:
+        description: path to zenodo.json inside the repo
+        type: string
+        required: false
+        default: Metadaten/zenodo.json
+      GOVDATA_DESTINATION_REPO:
+        description: destination where the govdata.ttl will be pushed to
+        type: string
+        required: false
+        default: knutator/Metadaten_Test
+    secrets:
+      GOVDATA_GITHUB_TOKEN:
+        description: Token to handle other repositories the the current one (e.g. repo where Govdata is pushed to)
+        required: true
+permissions:
+  contents: write
+jobs:
+  push_govdata:
+    name: push ttl to GovData
+    runs-on: ubuntu-latest
+    steps:
+      - name: run GovData Action
+        uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_Govdata@main
+        with:
+          govdata_github_token: ${{secrets.GOVDATA_GITHUB_TOKEN}}
+          destination_repo: ${{inputs.GOVDATA_DESTINATION_REPO}}

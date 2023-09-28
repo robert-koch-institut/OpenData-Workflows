@@ -1,0 +1,39 @@
+on:
+  workflow_call:
+    inputs:
+      OPENCODE_GROUPID:
+        description: ID of the group at OpenCode to publish the repo
+        type: string
+        required: false
+        default: 2781
+      OPENCODE_ACCESS_USER:
+        description: Name of the user at OpenCode to publish the repo
+        type: string
+        required: false
+        default: RKIOpenData
+      OPENCODE_ZENODOJSON_PATH:
+        description: path to zenodo.json inside the repo
+        type: string
+        required: false
+        default: Metadaten/zenodo.json
+      GOVDATA_DESTINATION_REPO:
+        description: destination where the govdata.ttl will be pushed to
+        type: string
+        required: false
+        default: knutator/Metadaten_Test
+    secrets:
+      GOVDATA_GITHUB_TOKEN:
+        description: Token to handle other repositories the the current one (e.g. repo where Govdata is pushed to)
+        required: true
+      OPENCODE_TOKEN:
+        description: Token to create and update repositories on OpenCode
+        required: true
+      NFDI4HEALTH_CLIENT_ID:
+        description: client to connect to the NFDI4Health API
+        required: true
+      NFDI4HEALTH_CLIENT_SECRET:
+        description: secret to connect toe the NFDI4Health API with the corresponding client
+        required: true
+permissions:
+  contents: write
+jobs:

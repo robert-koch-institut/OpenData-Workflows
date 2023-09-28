@@ -1,0 +1,19 @@
+name: main
+on:
+  push:
+    tags:
+      - '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: robert-koch-institut/OpenData-Workflows/.github/workflows/OpenData_Workflows.yml@main
+    with:
+      OPENCODE_GROUPID: 4116
+      OPENCODE_ACCESS_USER: knutperseke
+      GOVDATA_DESTINATION_REPO: knutator2/Metadaten_Test
+    secrets:
+      GOVDATA_GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
+      OPENCODE_TOKEN: ${{secrets.OPENCODE_TOKEN}}
+      NFDI4HEALTH_CLIENT_ID: ${{secrets.NFDI4HEALTH_CLIENT_ID}}
+      NFDI4HEALTH_CLIENT_SECRET: ${{secrets.NFDI4HEALTH_CLIENT_SECRET}}
