@@ -25,7 +25,7 @@ on:
         required: false
         default: knutator/Metadaten_Test
     secrets:
-      TOKEN_GITHUB:
+      GOVDATA_GITHUB_TOKEN:
         description: Token to handle other repositories and the current one (e.g. repo where Govdata is pushed to)
         required: true
       OPENCODE_TOKEN:
@@ -51,7 +51,7 @@ jobs:
     steps:
       - name: Create Release
         env:
-          GITHUB_TOKEN: ${{secrets.TOKEN_GITHUB}}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
         uses: robert-koch-institut/OpenData-Workflows/Create_release_on_tag_push@main
         with:
           REF_NAME: ${{github.ref_name}}
@@ -62,7 +62,7 @@ jobs:
       - name: run GovData Action
         uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_Govdata@main
         with:
-          govdata_github_token: ${{secrets.TOKEN_GITHUB}}
+          govdata_github_token: ${{secrets.GOVDATA_GITHUB_TOKEN}}
           destination_repo: ${{inputs.GOVDATA_DESTINATION_REPO}}
             
   # # Job syncs repository with OpenCoDE.de
@@ -73,7 +73,7 @@ jobs:
      -  name: Sync Github Open Data repository
         uses: robert-koch-institut/OpenData-Workflows/Sync_OpenData_repo_to_OpenCoDE@main
         with:
-          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENCODE_TOKEN: ${{ secrets.OPENCODE_TOKEN }}
           GROUP_ID: ${{inputs.OPENCODE_GROUPID}}
           ACCESS_USER: ${{inputs.OPENCODE_ACCESS_USER}}
@@ -89,7 +89,7 @@ jobs:
         with:
           nfdi4health_client_id: ${{secrets.NFDI4HEALTH_CLIENT_ID}}
           nfdi4health_client_secret: ${{secrets.NFDI4HEALTH_CLIENT_SECRET}}
-          github_token: ${{secrets.TOKEN_GITHUB}}
+          github_token: ${{secrets.GITHUB_TOKEN}}
 
 #  # Job builds and deploys Open Data Website
   opendata-website:
@@ -100,4 +100,4 @@ jobs:
       - name: Bulid and deploy OpenData Website
         uses: robert-koch-institut/OpenData-Website@main
         with:
-          GH_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

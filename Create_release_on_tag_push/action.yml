@@ -3,7 +3,7 @@ description: test
 inputs:
   REF_NAME:
     description: ref name
-    required: true
+    required: trues
 runs:
   using: "composite"
   steps:
