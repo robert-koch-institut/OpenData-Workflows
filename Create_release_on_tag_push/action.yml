@@ -13,7 +13,7 @@ runs:
     - name: Create Release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: {{secrets.GITHUB_TOKEN}}
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       with:
         tag_name: ${{inputs.REF_NAME}}
         release_name: Datenstand ${{inputs.REF_NAME}}
