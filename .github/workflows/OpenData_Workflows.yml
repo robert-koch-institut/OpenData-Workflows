@@ -24,6 +24,18 @@ on:
         type: string
         required: false
         default: knutator/Metadaten_Test
+      NFDI4HEALTH_METADATA_PATH:
+        description: path where the metadata for nfdi4health is stored
+        type: string
+        default: Metadaten/nfdi4health.json
+      NFDI4HEALTH_AUTHORIZATION_ENDPOINT:
+        description: endpoint for nfdi4health to get tokens from
+        type: string
+        default: "https://sso.studyhub.nfdi4health.de/realms/nfdi4health/protocol/openid-connect/token"
+      NFDI4HEALTH_BASE_URL:
+        description: base url for all nfdi4 health requests
+        type: string
+        default: "https://csh.nfdi4health.de/api/"
     secrets:
       GOVDATA_GITHUB_TOKEN:
         description: Token to handle other repositories and the current one (e.g. repo where Govdata is pushed to)
@@ -92,7 +104,10 @@ jobs:
         with:
           nfdi4health_client_id: ${{secrets.NFDI4HEALTH_CLIENT_ID}}
           nfdi4health_client_secret: ${{secrets.NFDI4HEALTH_CLIENT_SECRET}}
-          github_token: ${{secrets.GITHUB_TOKEN}}
+          nfdi4health_metadata_path: ${{inputs.NFDI4HEALTH_METADATA_PATH}}
+          nfdi4health_authorization_endpoint: ${{inputs.NFDI4HEALTH_AUTHORIZATION_ENDPOINT}}
+          github_token: ${{secrets.GH_TOKEN}}
+          nfdi4health_base_url: ${{inputs.NFDI4HEALTH_BASE_URL}}
 
 #  # Job builds and deploys Open Data Website
   opendata-website:
@@ -103,4 +118,4 @@ jobs:
       - name: Bulid and deploy OpenData Website
         uses: robert-koch-institut/OpenData-Website@main
         with:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
