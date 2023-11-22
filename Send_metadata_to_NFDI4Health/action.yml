@@ -38,13 +38,6 @@ runs:
         echo "jsonContent<<EOF"$'\n'"$content"$'\n'EOF >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Check for existing identifier
-      id: nfdi4HealthExistingIdentifier
-      run: |
-        UNPUBLISHED='${{fromJson(steps.nfdi4healthData.outputs.jsonContent).resource.resource_identifier == null}}'
-        echo "unpublished=UNPUBLISHED" >> $GITHUB_OUTPUT
-      shell: bash
-
     - name: Get Api Token
       id: nfdi4healthToken
       run: |
@@ -68,7 +61,6 @@ runs:
 
     - name: Write id to nfdi4health.json
       id: updateMetadata
-      #if: ${{steps.nfdi4HealthExistingIdentifier.outputs.unpublished == 'true'}}
       if: ${{fromJson(steps.nfdi4healthData.outputs.jsonContent).resource.resource_identifier == null}}
       run: |
         echo "`jq '.resource.resource_identifier=${{steps.createOrModify.outputs.response}}' Metadaten/nfdi4health.json `" > Metadaten/nfdi4health.json
