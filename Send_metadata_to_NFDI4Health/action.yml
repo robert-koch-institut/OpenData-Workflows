@@ -67,7 +67,7 @@ runs:
       shell: bash
 
     - name: Echo JSON
-      run: cat Metadaten/nfdi4health.json
+      run: git status
       shell: bash
 
     - name: Push nfdi4health.json
