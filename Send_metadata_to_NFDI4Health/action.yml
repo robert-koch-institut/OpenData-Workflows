@@ -66,6 +66,10 @@ runs:
         echo "`jq '.resource.resource_identifier=${{steps.createOrModify.outputs.response}}' Metadaten/nfdi4health.json `" > Metadaten/nfdi4health.json
       shell: bash
 
+    - name: Echo JSON
+      run: cat Matadaten/nfdi4health.json
+      shell: bash
+
     - name: Push nfdi4health.json
       if: ${{steps.updateMetadata.outcome == 'success'}}
       uses: EndBug/add-and-commit@v9
