@@ -36,6 +36,10 @@ on:
         description: base url for all nfdi4 health requests
         type: string
         default: "https://csh.nfdi4health.de/api/"
+      NFDI4HEALTH_BASE_BRANCH:
+        description: base branch to use to add modifications to the nfdi4health.json
+        type: string
+        default: "main"
     secrets:
       GOVDATA_GITHUB_TOKEN:
         description: Token to handle other repositories and the current one (e.g. repo where Govdata is pushed to)
@@ -108,6 +112,7 @@ jobs:
           nfdi4health_authorization_endpoint: ${{inputs.NFDI4HEALTH_AUTHORIZATION_ENDPOINT}}
           github_token: ${{secrets.GH_TOKEN}}
           nfdi4health_base_url: ${{inputs.NFDI4HEALTH_BASE_URL}}
+          base_branch: ${{inputs.NFDI4HEALTH_BASE_BRANCH}}
 
 #  # Job builds and deploys Open Data Website
   opendata-website:

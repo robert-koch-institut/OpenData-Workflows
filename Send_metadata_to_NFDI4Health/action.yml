@@ -19,13 +19,16 @@ inputs:
   nfdi4health_base_url:
     description: Base URL for the NFDI4Health Studyhub
     default: "https://csh.nfdi4health.de/api/"
+  base_branch:
+    description: Branch to push modifications to
+    default: "main"
 runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v3
       with:
         token: ${{inputs.github_token}}
-        ref: main
+        ref: ${{inputs.base_branch}}
 
     - name: Read nfdi4health.json content
       id: nfdi4healthData
