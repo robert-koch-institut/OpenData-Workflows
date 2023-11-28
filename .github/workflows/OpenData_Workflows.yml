@@ -105,6 +105,7 @@ jobs:
   sync_to_open_code:
     name: Sync Github Open Data repository and its metadata to OpenCoDE.de
     runs-on: ubuntu-latest
+    if: ${{ inputs.OPENCODE_ACTIVE }}
     steps:
      -  name: Sync Github Open Data repository
         uses: robert-koch-institut/OpenData-Workflows/Sync_OpenData_repo_to_OpenCoDE@main
