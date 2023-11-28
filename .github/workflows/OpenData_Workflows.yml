@@ -55,6 +55,10 @@ on:
         description: base branch to use to add modifications to the nfdi4health.json
         type: string
         default: "main"
+      WEBSITE_ACTIVE:
+        description: true, if the website should be built
+        type: boolean
+        default: false
     secrets:
       GOVDATA_GITHUB_TOKEN:
         description: Token to handle other repositories and the current one (e.g. repo where Govdata is pushed to)
@@ -138,6 +142,7 @@ jobs:
     name: Build and deploy OpenData-Website
     #needs: create_release
     runs-on: ubuntu-latest
+    if: ${{ inputs.WEBSITE_ACTIVE }}
     steps:
       - name: Bulid and deploy OpenData Website
         uses: robert-koch-institut/OpenData-Website@main
