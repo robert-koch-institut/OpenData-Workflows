@@ -34,7 +34,7 @@ on:
         type: string
         required: false
         default: knutator/Metadaten_Test
-      NFDI4Health_ACTIVE:
+      NFDI4HEALTH_ACTIVE:
         description: true, if metadata should be pushed to NFDI4Health
         type: boolean
         required: false
@@ -120,7 +120,7 @@ jobs:
   push_to_nfdi4health:
     name: push metadata to nfdi4health studyhub
     runs-on: ubuntu-latest
-    if: ${{ inputs.NFDI4Health_ACTIVE }}
+    if: ${{ inputs.NFDI4HEALTH_ACTIVE }}
     steps:
       - name: push metadata
         uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_NFDI4Health@main
