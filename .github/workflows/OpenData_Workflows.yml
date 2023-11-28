@@ -4,6 +4,11 @@ name: OpenData Workflow for and Metadata management
 on:
   workflow_call:
     inputs:
+      OPENCODE_ACTIVE:
+        description: true, if the repo should be synced with Open Code
+        type: boolean
+        required: false
+        default: false
       OPENCODE_GROUPID:
         description: ID of the group at OpenCode to publish the repo
         type: string
@@ -19,11 +24,21 @@ on:
          type: string
          required: false
          default: Metadaten/zenodo.json
+      GOVDATA_ACTIVE:
+        description: true, if metadata should be pushed to a govdata repo
+        type: boolean
+        required: false
+        default: false
       GOVDATA_DESTINATION_REPO:
         description: destination where the govdata.ttl will be pushed to
         type: string
         required: false
         default: knutator/Metadaten_Test
+      NFDI4Health_ACTIVE:
+        description: true, if metadata should be pushed to NFDI4Health
+        type: boolean
+        required: false
+        default: false
       NFDI4HEALTH_METADATA_PATH:
         description: path where the metadata for nfdi4health is stored
         type: string
@@ -43,16 +58,16 @@ on:
     secrets:
       GOVDATA_GITHUB_TOKEN:
         description: Token to handle other repositories and the current one (e.g. repo where Govdata is pushed to)
-        required: true
+        required: false
       OPENCODE_TOKEN:
         description: Token to create and update repositories on OpenCode
-        required: true
+        required: false
       NFDI4HEALTH_CLIENT_ID:
         description: client to connect to the NFDI4Health API
-        required: true
+        required: false
       NFDI4HEALTH_CLIENT_SECRET:
         description: secret to connect toe the NFDI4Health API with the corresponding client
-        required: true
+        required: false
       GH_TOKEN:
         description: current GH_TOKEN
         required: true
@@ -77,8 +92,10 @@ jobs:
   push_govdata:
     name: push ttl to GovData
     runs-on: ubuntu-latest
+    if: ${{inputs.GOVDATA_ACTIVE}}
     steps:
       - name: run GovData Action
+
         uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_Govdata@main
         with:
           govdata_github_token: ${{secrets.GOVDATA_GITHUB_TOKEN}}
