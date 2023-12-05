@@ -67,7 +67,7 @@ runs:
       id: updateMetadata
       if: ${{fromJson(steps.nfdi4healthData.outputs.jsonContent).resource.identifier == null}}
       run: |
-        echo "`jq '.resource.identifier=${{fromJson(steps.createOrModify.outputs.response).resource.identifier}}' Metadaten/nfdi4health.json `" > Metadaten/nfdi4health.json
+        echo "`jq '.resource.identifier="${{fromJson(steps.createOrModify.outputs.response).resource.identifier}}"' Metadaten/nfdi4health.json `" > Metadaten/nfdi4health.json
       shell: bash
 
     - name: Echo JSON
