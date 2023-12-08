@@ -81,10 +81,10 @@ runs:
         message: 'Updated nfdi4health.json with API response'
         add: 'Metadaten/nfdi4health.json'
 
-    #- name: Publish dataset at Studyhub
-    #  uses: fjogeleit/http-request-action@v1
-    #  with:
-    #    url: ${{format('{0}{1}{2}{3}', inputs.nfdi4health_base_url, 'resource/', steps.nfdi4healthData.outputs.)}}
+    - name: Publish dataset at Studyhub
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: ${{format('{0}{1}{2}{3}', inputs.nfdi4health_base_url, 'resource/', fromJson(steps.createOrModify.outputs.response).resource.identifier, '/publish')}}
 
 
 
