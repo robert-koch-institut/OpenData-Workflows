@@ -90,7 +90,7 @@ jobs:
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
-        uses: robert-koch-institut/OpenData-Workflows/Create_release_on_tag_push@main
+        uses: robert-koch-institut/OpenData-Workflows/Create_release_on_tag_push@dev
         with:
           REF_NAME: ${{github.ref_name}}
   push_govdata:
@@ -100,7 +100,7 @@ jobs:
     steps:
       - name: run GovData Action
 
-        uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_Govdata@main
+        uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_Govdata@dev
         with:
           govdata_github_token: ${{secrets.GOVDATA_GITHUB_TOKEN}}
           destination_repo: ${{inputs.GOVDATA_DESTINATION_REPO}}
@@ -112,7 +112,7 @@ jobs:
     if: ${{ inputs.OPENCODE_ACTIVE }}
     steps:
      -  name: Sync Github Open Data repository
-        uses: robert-koch-institut/OpenData-Workflows/Sync_OpenData_repo_to_OpenCoDE@main
+        uses: robert-koch-institut/OpenData-Workflows/Sync_OpenData_repo_to_OpenCoDE@dev
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENCODE_TOKEN: ${{ secrets.OPENCODE_TOKEN }}
@@ -127,7 +127,7 @@ jobs:
     if: ${{ inputs.NFDI4HEALTH_ACTIVE }}
     steps:
       - name: push metadata
-        uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_NFDI4Health@main
+        uses: robert-koch-institut/OpenData-Workflows/Send_metadata_to_NFDI4Health@dev
         with:
           nfdi4health_client_id: ${{secrets.NFDI4HEALTH_CLIENT_ID}}
           nfdi4health_client_secret: ${{secrets.NFDI4HEALTH_CLIENT_SECRET}}
