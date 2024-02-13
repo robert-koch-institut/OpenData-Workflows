@@ -62,6 +62,7 @@ runs:
         customHeaders: '{"Content-Type": "application/json", "Accept": "application/json"}'
         bearerToken: ${{steps.nfdi4healthToken.outputs.token}}
         data: ${{steps.nfdi4healthData.outputs.jsonContent}}
+        timout: 20000
 
     - name: Write id to nfdi4health.json
       id: updateMetadata
