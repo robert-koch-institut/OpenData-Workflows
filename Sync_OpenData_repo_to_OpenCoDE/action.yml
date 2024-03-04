@@ -78,7 +78,7 @@ runs:
       uses: actions/checkout@v3
       with:
         persist-credentials: false
-        lfs: 'true'
+        fetch-depth: '0'
 
     # Force push latest Github Open Data repository status to OpenCoDE
     - name: Force push latest status to OpenCoDE
