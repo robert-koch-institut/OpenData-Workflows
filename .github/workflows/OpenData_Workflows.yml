@@ -24,6 +24,10 @@ on:
          type: string
          required: false
          default: Metadaten/zenodo.json
+      OPENCODE_BRANCH:
+         description: base branch to use for OpenCoDE push 
+         type: string
+         default: "main"      
       GOVDATA_ACTIVE:
         description: true, if metadata should be pushed to a govdata repo
         type: boolean
@@ -120,6 +124,7 @@ jobs:
           ACCESS_USER: ${{inputs.OPENCODE_ACCESS_USER}}
 #          # REPO_PATH: The repository name must not start or end with a special character and must not contain consecutive special characters
           ZENODOJSON_PATH: ${{inputs.OPENCODE_ZENODOJSON_PATH}}
+          BRANCH: ${{inputs.OPENCODE_BRANCH}}
   
   push_to_nfdi4health:
     name: push metadata to nfdi4health studyhub
