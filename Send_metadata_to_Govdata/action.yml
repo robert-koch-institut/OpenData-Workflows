@@ -18,7 +18,7 @@ inputs:
     default: 'opendata@rki.de'
   user_name:
     description: 'user name to put into the commit'
-    default: 'knutator2'
+    default: 'RKIOpenData'
   govdata_github_token:
     description: 'token to access remote github repositories'
     required: true
