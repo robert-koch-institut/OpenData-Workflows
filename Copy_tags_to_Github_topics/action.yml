@@ -44,7 +44,11 @@ runs:
           topics_orig="${TOPICS}"
 
           # Convert to lowercase and replace spaces with underscores
-          topics_github_compliant=$(echo "$topics_orig" | tr '[:upper:]' '[:lower:]' | sed 's/ /_/g')
+          processed_topics=$(echo "$topics_orig" | tr '[:upper:]' '[:lower:]' | sed 's/ /_/g')
+
+          # Format the processed topics as a JSON array
+          processed_topics_json=$(echo "$processed_topics" | sed 's/\([^,]*\)/"\1"/g' | sed 's/,/","/g')
+          processed_topics_json="[${processed_topics_json}]"
 
           # Update GitHub topics
           curl \
@@ -52,5 +56,5 @@ runs:
             --header "Accept: application/vnd.github+json" \
             --header "Authorization: Bearer ${{ inputs.GITHUB_METADATA_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/topics \
-            -d "{\"names\": [${topics_github_compliant //,/\",\"}]}"
+            -d "{\"names\": ${processed_topics_json}}"
       shell: bash
