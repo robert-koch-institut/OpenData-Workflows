@@ -64,8 +64,8 @@ runs:
           # Update GitHub topics
           curl \
             -X PUT \
-            --header "Accept: application/vnd.github+json" \
-            --header "Authorization: Bearer ${{ inputs.GITHUB_METADATA_TOKEN }}" \
+            --header 'Accept: application/vnd.github+json' \
+            --header 'Authorization: Bearer ${{ inputs.GITHUB_METADATA_TOKEN }}' \
             https://api.github.com/repos/${{ github.repository }}/topics \
-            -d "{\"names\": [${processed_topics_joined}]}"
+            -d '{"names": [${processed_topics_joined}]}'
       shell: bash
