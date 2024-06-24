@@ -39,7 +39,7 @@ runs:
           curl \
             -X PUT \
             --header "Accept: application/vnd.github+json" \
-            --header "Authorization: Bearer {{ inputs.GITHUB_TOKEN }}" \
+            --header "Authorization: Bearer ${{ inputs.GITHUB_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/topics \
             -d '{"names": [${{ env.TOPICS }}]}'
       shell: bash
