@@ -13,7 +13,7 @@ inputs:
     required: true
     default: "Metadaten/zenodo.json"
 
-  # Enviroment variables
+  # Environment variables
   GITHUB_TOKEN:
     description: "Github Token"
     required: true
@@ -26,7 +26,6 @@ runs:
   using: "composite"
   
   steps:
-
     - name: Get zenodo.json metadata from Github Open Data repository
       run: |
          ZENODOJSON_URL=$(curl \
@@ -35,28 +34,23 @@ runs:
           --header "Accept: application/vnd.github.mercy-preview+json" \
           | jq -r '.download_url')
 
-         # Add Zenodo metadata to enviroment
-         echo "TOPICS="$(curl $ZENODOJSON_URL| jq -r '.keywords | join(",")')"" >> $GITHUB_ENV
+         # Add Zenodo metadata to environment
+         echo "TOPICS=$(curl -s $ZENODOJSON_URL | jq -r '.keywords | join(",")')" >> $GITHUB_ENV
       shell: bash
 
     - name: Process list of strings
       run: |
-          topics_orig = ${{ env.TOPICS }}
-          # Initialize an empty array for processed strings
-          topics_github_compliant = ()
-          # Process each string in the list
-          for topic in "${topics_orig[@]}"; do
-            # Convert to lowercase and replace spaces with underscores
-            topic_github_compliant = $(echo "$topic" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
-            # Append processed string to the processed_strings array
-            topics_github_compliant += ("$topic_github_compliant")
-          done
+          # Read topics from environment variable
+          topics_orig="${TOPICS}"
 
+          # Convert to lowercase and replace spaces with underscores
+          topics_github_compliant =$(echo "$topics_orig" | tr '[:upper:]' '[:lower:]' | sed 's/ /_/g')
+
+          # Update GitHub topics
           curl \
             -X PUT \
             --header "Accept: application/vnd.github+json" \
             --header "Authorization: Bearer ${{ inputs.GITHUB_METADATA_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/topics \
-            -d '{"names": [${{ topics_github_compliant }}]}'
+            -d "{\"names\": [${topics_github_compliant //,/\",\"}]}"
       shell: bash
- 
