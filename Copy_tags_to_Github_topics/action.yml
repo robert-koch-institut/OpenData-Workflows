@@ -43,12 +43,22 @@ runs:
           # Read topics from environment variable
           topics_orig="${TOPICS}"
 
-          # Convert to lowercase and replace spaces with underscores
-          processed_topics=$(echo "$topics_orig" | tr '[:upper:]' '[:lower:]' | sed 's/ /_/g')
+          # Convert the comma-separated list into an array
+          IFS=',' read -r -a topics_array <<< "$topics_orig"
+          
+          # Initialize an empty array for processed strings
+          processed_topics=()
 
-          # Format the processed topics as a JSON array
-          processed_topics_json=$(echo "$processed_topics" | sed 's/\([^,]*\)/"\1"/g' | sed 's/,/","/g')
-          processed_topics_json="[${processed_topics_json}]"
+          # Process each string in the list
+          for topic in "${topics_array[@]}"; do
+            # Convert to lowercase and replace spaces with underscores
+            topic_github_compliant=$(echo "$topic" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+            # Append processed string to the processed_strings array
+            processed_topics+=("$topic_github_compliant")
+          done
+
+          # Join the processed topics array into a comma-separated string
+          processed_topics_joined=$(IFS=,; echo "${processed_topics[*]}")
 
           # Update GitHub topics
           curl \
@@ -56,5 +66,5 @@ runs:
             --header "Accept: application/vnd.github+json" \
             --header "Authorization: Bearer ${{ inputs.GITHUB_METADATA_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/topics \
-            -d "{\"names\": ${processed_topics_json}}"
+            -d "{\"names\": [\"${processed_topics_joined//,/\",\"}\"]}"
       shell: bash
