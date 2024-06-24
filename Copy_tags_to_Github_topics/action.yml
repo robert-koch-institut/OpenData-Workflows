@@ -38,13 +38,7 @@ runs:
          # Add Zenodo metadata to enviroment
          echo "TOPICS="$(curl $ZENODOJSON_URL| jq -r '.keywords | join(",")')"" >> $GITHUB_ENV
       shell: bash
-
-    - name: Update the topics in the Github repo
-      run: |
-      name: Process Strings
-
-on: [push]
-
+      
 jobs:
   process-strings:
     runs-on: ubuntu-latest
