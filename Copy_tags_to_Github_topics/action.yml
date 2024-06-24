@@ -7,6 +7,7 @@ inputs:
     description: "The repository name must not start or end with a special character and must not contain consecutive special characters"
     default: ${{ github.event.repository.name }}
     required: true
+    
   ZENODOJSON_PATH:
     description: "Path to Zenodo.json that contains the repository metadata"
     required: true
@@ -15,6 +16,10 @@ inputs:
   # Enviroment variables
   GITHUB_TOKEN:
     description: "Github Token"
+    required: true
+    
+  GITHUB_METADATA_TOKEN:
+    description: "Github metadata Token"
     required: true
     
 runs:
@@ -39,7 +44,7 @@ runs:
           curl \
             -X PUT \
             --header "Accept: application/vnd.github+json" \
-            --header "Authorization: Bearer ${{ inputs.GITHUB_TOKEN }}" \
+            --header "Authorization: Bearer ${{ inputs.GITHUB_METADATA_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/topics \
             -d '{"names": [${{ env.TOPICS }}]}'
       shell: bash
