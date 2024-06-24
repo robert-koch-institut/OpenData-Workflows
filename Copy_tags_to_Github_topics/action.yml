@@ -44,7 +44,7 @@ runs:
           topics_orig="${TOPICS}"
 
           # Convert to lowercase and replace spaces with underscores
-          topics_github_compliant =$(echo "$topics_orig" | tr '[:upper:]' '[:lower:]' | sed 's/ /_/g')
+          topics_github_compliant=$(echo "$topics_orig" | tr '[:upper:]' '[:lower:]' | sed 's/ /_/g')
 
           # Update GitHub topics
           curl \
