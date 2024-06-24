@@ -59,6 +59,7 @@ runs:
 
           # Join the processed topics array into a comma-separated string
           processed_topics_joined=$(IFS=,; echo "${processed_topics[*]}")
+          echo "processed_topics_joined: $processed_topics_joined"
 
           # Update GitHub topics
           curl \
@@ -66,5 +67,5 @@ runs:
             --header "Accept: application/vnd.github+json" \
             --header "Authorization: Bearer ${{ inputs.GITHUB_METADATA_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/topics \
-            -d "{\"names\": [\"${processed_topics_joined//,/\",\"}\"]}"
+            -d "{"names": ["${processed_topics_joined}"]}"
       shell: bash
