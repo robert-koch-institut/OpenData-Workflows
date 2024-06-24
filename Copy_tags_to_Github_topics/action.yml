@@ -41,10 +41,35 @@ runs:
 
     - name: Update the topics in the Github repo
       run: |
+      name: Process Strings
+
+on: [push]
+
+jobs:
+  process-strings:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Process list of strings
+      run: |
+          topics_orig = ${{ env.TOPICS }}
+          # Initialize an empty array for processed strings
+          topics_github_compliant = ()
+          # Process each string in the list
+          for topic in "${topics_orig[@]}"; do
+            # Convert to lowercase and replace spaces with underscores
+            topic_github_compliant = $(echo "$topic" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+            # Append processed string to the processed_strings array
+            topics_github_compliant += ("$topic_github_compliant")
+          done
+
           curl \
             -X PUT \
             --header "Accept: application/vnd.github+json" \
             --header "Authorization: Bearer ${{ inputs.GITHUB_METADATA_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/topics \
-            -d '{"names": [${{ env.TOPICS }}]}'
+            -d '{"names": [${{ topics_github_compliant }}]}'
       shell: bash
+ 
