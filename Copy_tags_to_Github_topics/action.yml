@@ -51,8 +51,8 @@ runs:
     
           # Process each string in the list
           for topic in "${topics_array[@]}"; do
-            # Convert to lowercase and replace spaces with underscores
-            topic_github_compliant=$(echo "$topic" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+            # Convert to lowercase and replace spaces with hyphens
+            topic_github_compliant=$(echo "$topic" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
             # Append processed string to the processed_strings array
             processed_topics+=("\"$topic_github_compliant\"")
           done
