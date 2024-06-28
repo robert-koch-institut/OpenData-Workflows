@@ -1,5 +1,5 @@
-name: Copy the tags to Github topics
-description: ""
+name: Update Github repository details 
+description: "Updates the Github repository details from dataset metadata"
 
 inputs:
   # Repository metadata
@@ -27,6 +27,7 @@ runs:
   
   steps:
     - name: Get zenodo.json metadata from Github Open Data repository
+      shell: bash
       run: |
          ZENODOJSON_URL=$(curl \
           --request GET https://api.github.com/repos/${{ github.repository }}/contents/${{ inputs.ZENODOJSON_PATH }} \
@@ -34,42 +35,25 @@ runs:
           --header "Accept: application/vnd.github.mercy-preview+json" \
           | jq -r '.download_url')
 
-         # Add Zenodo metadata to environment
-         echo "TOPICS=$(curl -s $ZENODOJSON_URL | jq -r '.keywords | join(",")')" >> $GITHUB_ENV
+         # Porcess Add Zenodo metadata to environment
+         echo "TOPICS=$(curl -s $ZENODOJSON_URL | jq '{"names": (.keywords | map(gsub("ä|ö|ü| "; {"ä":"ae", "ö":"oe", "ü":"ue", " ":"-"})) | ascii_downcase)}')" >> $GITHUB_ENV
+         echo "DESCRIPTION=$(curl -s $ZENODOJSON_URL | jq '{"description": (.description | @text | gsub("<[^>]+>"; "") | gsub("\\n"; " ") | if length > 350 then .[:347] + "..." else . end)}')" >> $GITHUB_ENV
+       
+    - name: Update GitHub topics and description
       shell: bash
-          
-    - name: Process list of strings
       run: |
-          # Read topics from environment variable
-          topics_orig="${TOPICS}"
-    
-          # Convert the comma-separated list into an array
-          IFS=',' read -r -a topics_array <<< "$topics_orig"
-          
-          # Initialize an empty array for processed strings
-          processed_topics=()
-    
-          # Process each string in the list
-          for topic in "${topics_array[@]}"; do
-            # Convert to lowercase and replace spaces with hyphens
-            topic_github_compliant=$(echo "$topic" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr 'ü' 'ue' | tr 'ä' 'ae' | tr 'ö' 'oe')
-            # Append processed string to the processed_strings array
-            processed_topics+=("\"$topic_github_compliant\"")
-          done
-    
-          # Join the processed topics array into a comma-separated string
-          processed_topics_joined=$(IFS=,; echo "${processed_topics[*]}")
-          echo "processed_topics_joined: $processed_topics_joined"
-    
-          # Create the JSON payload
-          json_payload=$(printf '{"names": [%s]}' "$processed_topics_joined")
-          echo "JSON payload: $json_payload"
-    
           # Update GitHub topics
           curl \
             -X PUT \
             --header 'Accept: application/vnd.github+json' \
             --header 'Authorization: Bearer ${{ inputs.GITHUB_METADATA_TOKEN }}' \
             https://api.github.com/repos/${{ github.repository }}/topics \
-            -d "$json_payload"
-      shell: bash
+            -d "${TOPICS}"
+            
+          # Update GitHub description
+          curl \
+            -X PATCH \
+            --header 'Accept: application/vnd.github+json' \
+            --header 'Authorization: Bearer ${{ inputs.GITHUB_METADATA_TOKEN }}' \
+            https://api.github.com/repos/${{ github.repository }} \
+            -d "${DESCRIPTION}"
