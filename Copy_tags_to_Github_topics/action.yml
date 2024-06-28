@@ -52,7 +52,7 @@ runs:
           # Process each string in the list
           for topic in "${topics_array[@]}"; do
             # Convert to lowercase and replace spaces with hyphens
-            topic_github_compliant=$(echo "$topic" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+            topic_github_compliant=$(echo "$topic" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr 'ü' 'ue' | tr 'ä' 'ae' | tr 'ö' 'oe')
             # Append processed string to the processed_strings array
             processed_topics+=("\"$topic_github_compliant\"")
           done
