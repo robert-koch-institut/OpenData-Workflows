@@ -34,8 +34,9 @@ runs:
           | jq -r '.download_url')
 
          # Process and add Zenodo metadata to environment
-         echo "TOPICS=$(curl -s $ZENODOJSON_URL | jq '{"names": (.keywords | map(gsub("ä|ö|ü| "; {"ä":"ae", "ö":"oe", "ü":"ue", " ":"-"})) | ascii_downcase)}')" >> $GITHUB_ENV
+         TOPICS=$(curl -s $ZENODOJSON_URL | jq '{"names": (.keywords | map(gsub("ä|ö|ü| "; {"ä":"ae", "ö":"oe", "ü":"ue", " ":"-"})) | ascii_downcase)}')
          print ${TOPICS}
+         echo "TOPICS=${TOPICS}" >> $GITHUB_ENV
          echo "DESCRIPTION=$(curl -s $ZENODOJSON_URL | jq '{"description": (.description | @text | gsub("<[^>]+>"; "") | gsub("\\n"; " ") | if length > 350 then .[:347] + "..." else . end)}')" >> $GITHUB_ENV
          print ${DESCRIPTION}
          
