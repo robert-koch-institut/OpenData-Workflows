@@ -37,14 +37,14 @@ runs:
   using: "composite"
   
   steps:
-    # - name: Get OpencoDE group path
-    #   id: group_path
-    #   run: | 
-    #     GROUP_INFO=$(curl \
-    #       --request GET "https://gitlab.opencode.de/api/v4/groups/${{inputs.GROUP_ID }}" \
-    #       --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}") 
-    #     echo "GROUP_PATH="$(echo $GROUP_INFO | jq -r '.full_path')"" >> $GITHUB_ENV
-    #   shell: bash
+    - name: Get OpencoDE group path
+      id: group_path
+      run: | 
+        GROUP_INFO=$(curl \
+          --request GET "https://gitlab.opencode.de/api/v4/groups/${{inputs.GROUP_ID }}" \
+          --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}") 
+        echo "GROUP_PATH="$(echo $GROUP_INFO | jq -r '.full_path')"" >> $GITHUB_ENV
+      shell: bash
 
     - name: Get zenodo.json metadata from Github Open Data repository
       run: |
