@@ -37,35 +37,39 @@ runs:
          # Add Zenodo metadata to environment
          echo "TOPICS=$(curl -s $ZENODOJSON_URL | jq -r '.keywords | join(",")')" >> $GITHUB_ENV
       shell: bash
-
+          
     - name: Process list of strings
       run: |
           # Read topics from environment variable
           topics_orig="${TOPICS}"
-
+    
           # Convert the comma-separated list into an array
           IFS=',' read -r -a topics_array <<< "$topics_orig"
           
           # Initialize an empty array for processed strings
           processed_topics=()
-
+    
           # Process each string in the list
           for topic in "${topics_array[@]}"; do
-            # Convert to lowercase and replace spaces with underscores
-            topic_github_compliant=$(echo "$topic" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+            # Convert to lowercase and replace spaces with hyphens
+            topic_github_compliant=$(echo "$topic" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr 'ü' 'ue' | tr 'ä' 'ae' | tr 'ö' 'oe')
             # Append processed string to the processed_strings array
             processed_topics+=("\"$topic_github_compliant\"")
           done
-
+    
           # Join the processed topics array into a comma-separated string
           processed_topics_joined=$(IFS=,; echo "${processed_topics[*]}")
           echo "processed_topics_joined: $processed_topics_joined"
-
+    
+          # Create the JSON payload
+          json_payload=$(printf '{"names": [%s]}' "$processed_topics_joined")
+          echo "JSON payload: $json_payload"
+    
           # Update GitHub topics
           curl \
             -X PUT \
             --header 'Accept: application/vnd.github+json' \
             --header 'Authorization: Bearer ${{ inputs.GITHUB_METADATA_TOKEN }}' \
             https://api.github.com/repos/${{ github.repository }}/topics \
-            -d '{"names": [${processed_topics_joined}]}'
+            -d "$json_payload"
       shell: bash

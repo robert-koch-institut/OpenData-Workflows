@@ -65,6 +65,7 @@ runs:
         customHeaders: '{"Content-Type": "application/json", "Accept": "application/json"}'
         bearerToken: ${{steps.nfdi4healthToken.outputs.token}}
         data: ${{steps.nfdi4healthData.outputs.jsonContent}}
+        timeout: 20000
 
     - name: Write id to nfdi4health.json
       id: updateMetadata
@@ -90,5 +91,6 @@ runs:
         url: ${{format('{0}{1}{2}{3}', inputs.nfdi4health_base_url, 'resource/', fromJson(steps.createOrModify.outputs.response).resource.identifier, '/publish')}}
         customHeaders: '{"Content-Type": "application/json", "Accept": "application/json"}'
         bearerToken: ${{steps.nfdi4healthToken.outputs.token}}
+        timeout: 20000
 
 
