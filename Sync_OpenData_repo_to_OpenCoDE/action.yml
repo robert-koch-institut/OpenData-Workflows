@@ -1,5 +1,6 @@
 name: Sync Github Open Data repository and its metadata to OpenCoDE.de
-description: "test"
+description: "Workflow to sync OpenCoDE and Github"
+
 inputs:
   # OpenCoDE Metadata
   GROUP_ID:
@@ -10,25 +11,31 @@ inputs:
     description: "OpenCoDE publishing username"
     default: "RKIOpenData"
     required: true
+  BRANCH:
+    description: "Branch to checkout"
+    default: "main"
+    required: true
   # Repository metadata
   REPO_PATH:
     description: "The repository name must not start or end with a special character and must not contain consecutive special characters"
     default: ${{ github.event.repository.name }}
     required: true
   ZENODOJSON_PATH:
-    description: ""
+    description: "Path to Zenodo.json that contains the repository metadata"
     required: true
     default: "Metadaten/zenodo.json"
 
   # Enviroment variables
   OPENCODE_TOKEN:
-    description: ""
+    description: "Access Token for OpenCoDE User"
     required: true
   GITHUB_TOKEN:
-    description: ""
+    description: "Github Token"
     required: true
+    
 runs:
   using: "composite"
+  
   steps:
     - name: Get OpencoDE group path
       id: group_path
@@ -36,7 +43,7 @@ runs:
         GROUP_INFO=$(curl \
           --request GET "https://gitlab.opencode.de/api/v4/groups/${{inputs.GROUP_ID }}" \
           --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}") 
-        echo "GROUP_PATH="$(echo $GROUP_INFO | jq -r '.path')"" >> $GITHUB_ENV
+        echo "GROUP_PATH="$(echo $GROUP_INFO | jq -r '.full_path')"" >> $GITHUB_ENV
       shell: bash
 
     - name: Get zenodo.json metadata from Github Open Data repository
@@ -50,7 +57,7 @@ runs:
          # Add Zenodo metadata to enviroment
          echo "REPO_NAME="$(curl $ZENODOJSON_URL | jq -r '.title')"" >> $GITHUB_ENV
          echo "DESCRIPTION="$(curl $ZENODOJSON_URL | jq -r '.description'| head -c 2000)"" >> $GITHUB_ENV
-         echo "TOPICS="$(curl $ZENODOJSON_URL| jq -r '.keywords | join(",")')"" >> $GITHUB_ENV
+         echo "TOPICS="$(curl $ZENODOJSON_URL| jq -r '.subjects[].subject | @csv')"" >> $GITHUB_ENV
       shell: bash
     - name: Create OpenCoDE repository and update repository metadata
       run: |
@@ -72,11 +79,10 @@ runs:
       shell: bash
 
     - name: Checkout Github repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         persist-credentials: false
-        lfs: 'true'
-        ref: 'main'
+        ref: ${{inputs.BRANCH }}
         fetch-depth: '0'
 
     # Force push latest Github Open Data repository status to OpenCoDE

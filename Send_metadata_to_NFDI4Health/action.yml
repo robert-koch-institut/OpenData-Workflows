@@ -1,5 +1,6 @@
 name: Push metadata to nfdi4Health
 description: "Pushes converted metadata to the Nfdi4Health Studyhub"
+
 inputs:
   nfdi4health_client_id:
     description: id of the client to connect to the nfdi4health api
@@ -22,8 +23,10 @@ inputs:
   base_branch:
     description: Branch to push modifications to
     default: "main"
+
 runs:
   using: "composite"
+  
   steps:
     - uses: actions/checkout@v3
       with:
