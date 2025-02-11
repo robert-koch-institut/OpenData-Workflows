@@ -43,7 +43,7 @@ runs:
         GROUP_INFO=$(curl \
           --request GET "https://gitlab.opencode.de/api/v4/groups/${{inputs.GROUP_ID }}" \
           --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}") 
-        echo "GROUP_PATH="$(echo $GROUP_INFO | jq -r '.full_path')"" >> $GITHUB_ENV
+        echo "GROUP_PATH="$(echo $GROUP_INFO | jq -r '.full_path' | sed 's/\//%2F/g' )"" >> $GITHUB_ENV
 
         # adjust REPO_PATH for Gitlab constrains and save to enviroment
         echo "REPO_PATH_CLEAN="$(echo "${{ inputs.REPO_PATH }}" | sed 's/_-_/-/g; s/_-/-/g; s/-_/-/g')"" >> $GITHUB_ENV
