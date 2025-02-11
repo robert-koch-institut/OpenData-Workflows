@@ -61,19 +61,19 @@ runs:
       shell: bash
     - name: Create OpenCoDE repository and update repository metadata
       run: |
-        # adjust REPO_PATH for Gitlab constrains
-        REPO_PATH_CLEAN=$(echo "${{ inputs.REPO_PATH }}" | sed 's/_-_/-/g; s/_-/-/g; s/-_/-/g')
+        # adjust REPO_PATH for Gitlab constrains and save to enviroment
+        echo "REPO_PATH_CLEAN="$(echo "${{ inputs.REPO_PATH }}" | sed 's/_-_/-/g; s/_-/-/g; s/-_/-/g')"" >> $GITHUB_ENV
         
         # Create OpenCoDE repository
         curl \
           --request POST "https://gitlab.opencode.de/api/v4/projects" \
           --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}" \
-          --data-urlencode "path=$REPO_PATH_CLEAN" \
+          --data-urlencode "path=${{ env.REPO_PATH_CLEAN }}" \
           --data-urlencode  "namespace_id=${{ inputs.GROUP_ID }}"
                   
           # Update OpenCoDE repository metadata
           response=$(curl \
-            --request PUT "https://gitlab.opencode.de/api/v4/projects/${{ env.GROUP_PATH }}%2F${{ inputs.REPO_PATH }}" \
+            --request PUT "https://gitlab.opencode.de/api/v4/projects/${{ env.GROUP_PATH }}%2F${{ env.REPO_PATH_CLEAN }}" \
             --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}" \
             --data "name=${{ env.REPO_NAME }}" \
             --data "description=${{ env.DESCRIPTION }}" \
@@ -91,7 +91,7 @@ runs:
     # Force push latest Github Open Data repository status to OpenCoDE
     - name: Force push latest status to OpenCoDE
       run: |
-        git remote add opencode https://${{ inputs.ACCESS_USER  }}:${{ inputs.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ env.GROUP_PATH }}/${{ inputs.REPO_PATH }}.git
+        git remote add opencode https://${{ inputs.ACCESS_USER  }}:${{ inputs.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ env.GROUP_PATH }}/${{ env.REPO_PATH_CLEAN }}.git
         git push opencode -f
         git push opencode -f --tags
       shell: bash
