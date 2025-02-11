@@ -23,7 +23,7 @@ inputs:
   ZENODOJSON_PATH:
     description: "Path to Zenodo.json that contains the repository metadata"
     required: true
-    default: "Metadaten/zenodo.json"
+    default: "Metadaten/zenodo-invenio.json"
 
   # Enviroment variables
   OPENCODE_TOKEN:
