@@ -67,7 +67,7 @@ runs:
          # Add Zenodo metadata to enviroment
          echo "REPO_NAME="$(curl $ZENODOJSON_URL | jq -r '.title')"" >> $GITHUB_ENV
          echo "DESCRIPTION="$(curl $ZENODOJSON_URL | jq -r '.description'| head -c 2000)"" >> $GITHUB_ENV
-         echo "TOPICS="$(curl $ZENODOJSON_URL| jq -r '[.subjects[].subject] | join(",")' | sed 's/ä/ae/g; s/ö/oe/g; s/ü/ue/g'; s/ß/ss/g' )"" >> $GITHUB_ENV
+         echo "TOPICS="$(curl $ZENODOJSON_URL| jq -r '[.subjects[].subject] | join(",")' | sed 's/ä/ae/g; s/ö/oe/g; s/ü/ue/g; s/ß/ss/g' )"" >> $GITHUB_ENV
       
     - name: Create OpenCoDE repository
       shell: bash
