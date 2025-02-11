@@ -41,6 +41,7 @@ runs:
       id: group_path
       shell: bash
       run: | 
+        # Get OpencoDE group path
         GROUP_INFO=$(curl \
           --request GET "https://gitlab.opencode.de/api/v4/groups/${{inputs.GROUP_ID }}" \
           --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}") 
@@ -49,12 +50,14 @@ runs:
         
     - name: Adjust REPO_PATH acording to Gitlab constrains 
       shell: bash
-      run: |         
+      run: | 
+        # Adjust REPO_PATH acording to Gitlab constrains
         echo "REPO_PATH_GITLAB="$(echo "${{ inputs.REPO_PATH }}" | sed 's/_-_/-/g; s/_-/-/g; s/-_/-/g')"" >> $GITHUB_ENV
 
     - name: Get zenodo.json metadata from Github Open Data repository
       shell: bash
       run: |
+         # Get zenodo.json metadata from Github Open Data repository
          ZENODOJSON_URL=$(curl \
           --request GET https://api.github.com/repos/${{ github.repository }}/contents/${{ inputs.ZENODOJSON_PATH }} \
           --header "Authorization: token ${{ inputs.GITHUB_TOKEN }}" \
@@ -69,7 +72,7 @@ runs:
     - name: Create OpenCoDE repository and update repository metadata
       shell: bash
       run: |
-        # Create OpenCoDE repository
+        # Create OpenCoDE repository and update repository metadata
         curl \
           --request POST "https://gitlab.opencode.de/api/v4/projects" \
           --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}" \
@@ -79,34 +82,24 @@ runs:
     - name: Update OpenCoDE repository metadata
       shell: bash
       run: |
-        # API call
+        # Update OpenCoDE repository metadata
         response=$(curl \
           --request PUT "https://gitlab.opencode.de/api/v4/projects/${{ env.GROUP_PATH_URLENCODE }}%2F${{ env.REPO_PATH_GITLAB }}" \
           --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}" \
           --data-urlencode "name=${{ env.REPO_NAME }}" \
           --data-urlencode "description=${{ env.DESCRIPTION }}" \
           --data-urlencode "topics=${{ env.TOPICS }}")
-          
-        # HTTP-Status extrahieren und prüfen
-        http_status=$(echo "$response" | sed -e 's/.*HTTPSTATUS://')
-        body=$(echo "$response" | sed -e 's/HTTPSTATUS:.*//')
-        echo "Response Body: $body"
-        echo "HTTP Status: $http_status"
+        echo "$response"
 
     - name: Make OpenCoDE repository public
       shell: bash
       run: |
-        # API call
+        # Make OpenCoDE repository public
         response=$(curl \
           --request PUT "https://gitlab.opencode.de/api/v4/projects/${{ env.GROUP_PATH_URLENCODE }}%2F${{ env.REPO_PATH_GITLAB }}" \
           --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}" \
           --data-urlencode "visibility=public")
-          
-        # HTTP-Status extrahieren und prüfen
-        http_status=$(echo "$response" | sed -e 's/.*HTTPSTATUS://')
-        body=$(echo "$response" | sed -e 's/HTTPSTATUS:.*//')
-        echo "Response Body: $body"
-        echo "HTTP Status: $http_status"
+        echo "$response"
         
     - name: Checkout Github repository
       uses: actions/checkout@v4
@@ -115,11 +108,10 @@ runs:
         ref: ${{ inputs.BRANCH }}
         fetch-depth: '0'
 
-    # Force push latest Github Open Data repository status to OpenCoDE
-    - name: Force push latest status to OpenCoDE
+    - name: Force push latest Github Open Data repository status to OpenCoDE
       shell: bash
       run: |
-        git remote add opencode https://${{ inputs.ACCESS_USER  }}:${{ inputs.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ env.GROUP_PATH }}/${{ env.REPO_PATH_CLEAN }}.git
+        # Force push latest Github Open Data repository status to OpenCoDE
+        git remote add opencode https://${{ inputs.ACCESS_USER  }}:${{ inputs.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ env.GROUP_PATH }}/${{ env.REPO_PATH_GITLAB}}.git
         git push opencode -f
         git push opencode -f --tags
-
