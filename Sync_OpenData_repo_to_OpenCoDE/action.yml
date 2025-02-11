@@ -23,7 +23,7 @@ inputs:
   ZENODOJSON_PATH:
     description: "Path to Zenodo.json that contains the repository metadata"
     required: true
-    default: "Metadaten/zenodo.json"
+    default: "Metadaten/zenodo-invenio.json"
 
   # Enviroment variables
   OPENCODE_TOKEN:
@@ -44,6 +44,9 @@ runs:
           --request GET "https://gitlab.opencode.de/api/v4/groups/${{inputs.GROUP_ID }}" \
           --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}") 
         echo "GROUP_PATH="$(echo $GROUP_INFO | jq -r '.full_path')"" >> $GITHUB_ENV
+
+        # adjust REPO_PATH for Gitlab constrains and save to enviroment
+        echo "REPO_PATH_CLEAN="$(echo "${{ inputs.REPO_PATH }}" | sed 's/_-_/-/g; s/_-/-/g; s/-_/-/g')"" >> $GITHUB_ENV
       shell: bash
 
     - name: Get zenodo.json metadata from Github Open Data repository
@@ -59,18 +62,19 @@ runs:
          echo "DESCRIPTION="$(curl $ZENODOJSON_URL | jq -r '.description'| head -c 2000)"" >> $GITHUB_ENV
          echo "TOPICS="$(curl $ZENODOJSON_URL| jq -r '.subjects[].subject | @csv')"" >> $GITHUB_ENV
       shell: bash
+      
     - name: Create OpenCoDE repository and update repository metadata
       run: |
         # Create OpenCoDE repository
         curl \
           --request POST "https://gitlab.opencode.de/api/v4/projects" \
           --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}" \
-          --data-urlencode  "path=${{ inputs.REPO_PATH }}" \
+          --data-urlencode "path=${{ env.REPO_PATH_CLEAN }}" \
           --data-urlencode  "namespace_id=${{ inputs.GROUP_ID }}"
                   
           # Update OpenCoDE repository metadata
           response=$(curl \
-            --request PUT "https://gitlab.opencode.de/api/v4/projects/${{ env.GROUP_PATH }}%2F${{ inputs.REPO_PATH }}" \
+            --request PUT "https://gitlab.opencode.de/api/v4/projects/${{ env.GROUP_PATH }}%2F${{ env.REPO_PATH_CLEAN }}" \
             --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}" \
             --data "name=${{ env.REPO_NAME }}" \
             --data "description=${{ env.DESCRIPTION }}" \
@@ -88,7 +92,7 @@ runs:
     # Force push latest Github Open Data repository status to OpenCoDE
     - name: Force push latest status to OpenCoDE
       run: |
-        git remote add opencode https://${{ inputs.ACCESS_USER  }}:${{ inputs.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ env.GROUP_PATH }}/${{ inputs.REPO_PATH }}.git
+        git remote add opencode https://${{ inputs.ACCESS_USER  }}:${{ inputs.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ env.GROUP_PATH }}/${{ env.REPO_PATH_CLEAN }}.git
         git push opencode -f
         git push opencode -f --tags
       shell: bash
