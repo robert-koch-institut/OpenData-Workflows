@@ -61,11 +61,14 @@ runs:
       shell: bash
     - name: Create OpenCoDE repository and update repository metadata
       run: |
+        # adjust REPO_PATH for Gitlab constrains
+        REPO_PATH_CLEAN=$(echo "${{ inputs.REPO_PATH }}" | sed 's/_-_/-/g; s/_-/-/g; s/-_/-/g')
+        
         # Create OpenCoDE repository
         curl \
           --request POST "https://gitlab.opencode.de/api/v4/projects" \
           --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}" \
-          --data-urlencode  "path=${{ inputs.REPO_PATH }}" \
+          --data-urlencode "path=$REPO_PATH_CLEAN" \
           --data-urlencode  "namespace_id=${{ inputs.GROUP_ID }}"
                   
           # Update OpenCoDE repository metadata
