@@ -107,13 +107,13 @@ runs:
         persist-credentials: false
         ref: ${{ inputs.BRANCH }}
         fetch-depth: '0'
+        lfs: true
 
     - name: Force push latest Github Open Data repository status to OpenCoDE
       shell: bash
       run: |
         # Force push latest Github Open Data repository status to OpenCoDE
         git lfs install --skip-smudge
-        git config lfs.allowincompletepush true
         git remote add opencode https://${{ inputs.ACCESS_USER  }}:${{ inputs.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ env.GROUP_PATH }}/${{ env.REPO_PATH_GITLAB}}.git
         git lfs push opencode --all
         git push opencode -f
