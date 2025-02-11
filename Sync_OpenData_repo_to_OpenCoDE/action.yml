@@ -60,7 +60,7 @@ runs:
          # Add Zenodo metadata to enviroment
          echo "REPO_NAME="$(curl $ZENODOJSON_URL | jq -r '.title')"" >> $GITHUB_ENV
          echo "DESCRIPTION="$(curl $ZENODOJSON_URL | jq -r '.description'| head -c 2000)"" >> $GITHUB_ENV
-         echo "TOPICS="$(curl $ZENODOJSON_URL| jq -r '[.subjects[].subject] | join(",") | @csv')"" >> $GITHUB_ENV
+         echo "TOPICS="$(curl $ZENODOJSON_URL| jq -r '[.subjects[].subject] | join(",")')"" >> $GITHUB_ENV
       shell: bash
       
     - name: Create OpenCoDE repository and update repository metadata
