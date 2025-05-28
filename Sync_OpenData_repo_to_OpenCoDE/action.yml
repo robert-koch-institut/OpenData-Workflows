@@ -109,6 +109,15 @@ runs:
         fetch-depth: '0'
         lfs: true
 
+    - name: Pull Git LFS files (if LFS is enabled and used)
+      run: |
+        if command -v git-lfs >/dev/null && git lfs track | grep -q .; then
+          echo "Pulling Git LFS files..."
+          git lfs pull
+        else
+          echo "Skipping LFS pull (not installed or not used)."
+        fi
+
     - name: Force push latest Github Open Data repository status to OpenCoDE
       shell: bash
       run: |
