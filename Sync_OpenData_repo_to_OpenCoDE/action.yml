@@ -110,6 +110,7 @@ runs:
         lfs: true
 
     - name: Pull Git LFS files (if LFS is enabled and used)
+      shell: bash
       run: |
         if command -v git-lfs >/dev/null && git lfs track | grep -q .; then
           echo "Pulling Git LFS files..."
