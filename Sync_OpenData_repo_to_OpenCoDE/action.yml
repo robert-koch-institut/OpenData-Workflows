@@ -67,7 +67,7 @@ runs:
          # Add Zenodo metadata to enviroment
          echo "REPO_NAME="$(curl $ZENODOJSON_URL | jq -r '.title')"" >> $GITHUB_ENV
          echo "DESCRIPTION="$(curl $ZENODOJSON_URL | jq -r '.description'| head -c 2000)"" >> $GITHUB_ENV
-         echo "TOPICS="$(curl $ZENODOJSON_URL| jq -r '[.subjects[].subject] | join(",")')"" >> $GITHUB_ENV
+         echo "TOPICS="$(curl $ZENODOJSON_URL| jq -r '[.subjects[].subject] | join(",")' | sed 's/ä/ae/g; s/ö/oe/g; s/ü/ue/g; s/ß/ss/g' )"" >> $GITHUB_ENV
       
     - name: Create OpenCoDE repository
       shell: bash
@@ -108,6 +108,16 @@ runs:
         ref: ${{ inputs.BRANCH }}
         fetch-depth: '0'
         lfs: true
+
+    - name: Pull Git LFS files (if LFS is enabled and used)
+      shell: bash
+      run: |
+        if command -v git-lfs >/dev/null && git lfs track | grep -q .; then
+          echo "Pulling Git LFS files..."
+          git lfs pull
+        else
+          echo "Skipping LFS pull (not installed or not used)."
+        fi
 
     - name: Force push latest Github Open Data repository status to OpenCoDE
       shell: bash

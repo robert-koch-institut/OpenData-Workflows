@@ -54,7 +54,7 @@ on:
       NFDI4HEALTH_BASE_URL:
         description: base url for all nfdi4 health requests
         type: string
-        default: "https://csh.nfdi4health.de/api/"
+        default: "https://health-study-hub.de/api/"
       NFDI4HEALTH_BASE_BRANCH:
         description: base branch to use to add modifications to the nfdi4health.json
         type: string
