@@ -36,6 +36,7 @@ runs:
          # Process and add Zenodo metadata to environment
          KEYWORDS=$(curl -s $ZENODOJSON_URL | jq -c '{"names": (.keywords | map(gsub("ä"; "ae") | gsub("ö"; "oe") | gsub("ü"; "ue") | gsub(" "; "-") | ascii_downcase))}')
          DESCRIPTION=$(curl -s $ZENODOJSON_URL | jq -c '{"description": (.description | @text | gsub("<[^>]+>"; "") | gsub("\\n"; " ") | if length > 350 then .[:347] + "..." else . end)}')
+         echo "TOPICS=$KEYWORDS"
          echo "TOPICS=$KEYWORDS" >> $GITHUB_ENV
          echo "DESCRIPTION=$DESCRIPTION" >> $GITHUB_ENV
          
