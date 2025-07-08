@@ -46,7 +46,7 @@ runs:
                      | gsub(" "; "-") 
                      | ascii_downcase)
               | map(select(length <= 50))
-              | .[:100]
+              | .[:20]
             )
           }')
          DESCRIPTION=$(curl -s $ZENODOJSON_URL | jq -c '{"description": (.description | @text | gsub("<[^>]+>"; "") | gsub("\\n"; " ") | if length > 350 then .[:347] + "..." else . end)}')
