@@ -43,8 +43,9 @@ runs:
     - name: Update GitHub topics and description
       shell: bash
       run: |
+          set -e
           # Update GitHub topics
-          curl \
+          curl --fail --silent \
             -X PUT \
             --header 'Accept: application/vnd.github+json' \
             --header 'Authorization: Bearer ${{ inputs.GITHUB_METADATA_TOKEN }}' \
@@ -52,7 +53,7 @@ runs:
             -d "${TOPICS}"
             
           # Update GitHub description
-          curl \
+          curl --fail --silent \
             -X PATCH \
             --header 'Accept: application/vnd.github+json' \
             --header 'Authorization: Bearer ${{ inputs.GITHUB_METADATA_TOKEN }}' \
