@@ -43,9 +43,10 @@ runs:
                      | gsub("ä"; "ae") 
                      | gsub("ö"; "oe") 
                      | gsub("ü"; "ue") 
-                     | gsub(" "; "-") 
-                     | ascii_downcase)
-              | map(select(length <= 50))
+                     | gsub(" "; "-")  # replace spaces by hyphens
+                     | gsub(","; "")   # remove commas
+                     | ascii_downcase) # convert to lower case
+              | map(select(length <= 50))  # select only keywords wkith 50 characters or less (this is the max character limit of github)
               | .[:20]
             )
           }')
