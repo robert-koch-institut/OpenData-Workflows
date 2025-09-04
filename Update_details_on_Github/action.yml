@@ -50,7 +50,23 @@ runs:
               | .[:20]
             )
           }')
-         DESCRIPTION=$(curl -s $ZENODOJSON_URL | jq -c '{"description": (.description | @text | gsub("<[^>]+>"; "") | gsub("\\n"; " ") | if length > 350 then .[:347] + "..." else . end)}')
+        DESCRIPTION=$(
+            curl -fsSL "$ZENODOJSON_URL" |
+            jq -c '{
+              description:
+                (.description // "" 
+                 | gsub("&nbsp;"; " ")
+                 | gsub("&quot;"; "\"")
+                 | gsub("&#39;"; "'\''")
+                 | gsub("&apos;"; "'\''")
+                 | gsub("&amp;"; "&")
+                 | gsub("&lt;"; "<")
+                 | gsub("&gt;"; ">")
+                 | gsub("<[^>]+>"; "")
+                 | gsub("\n"; " ")
+                 | if length > 350 then .[:347] + "..." else . end)
+            }'
+          )
          echo "TOPICS=$KEYWORDS"
          echo "TOPICS=$KEYWORDS" >> $GITHUB_ENV
          echo "DESCRIPTION=$DESCRIPTION" >> $GITHUB_ENV
