@@ -45,12 +45,7 @@ runs:
                      | gsub("ü"; "ue") 
                      | gsub(" "; "-")  # replace spaces by hyphens
                      | gsub(","; "")   # remove commas
-                     | gsub("("; "")   # remove brackets
-                     | gsub(")"; "")   # remove brackets
-                     | gsub("["; "")   # remove brackets
-                     | gsub("]"; "")   # remove brackets
-                     | gsub("{"; "")   # remove brackets
-                     | gsub("}"; "")   # remove brackets
+                     | gsub("[()\\[\\]{}]"; "") # remove any brackets
                      | ascii_downcase) # convert to lower case
               | map(select(length <= 50))  # select only keywords wkith 50 characters or less (this is the max character limit of github)
               | .[:20]
