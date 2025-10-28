@@ -136,33 +136,29 @@ runs:
 
           echo "Special-case: pushing last 5 tags only for $REPO_LOWER"
 
-          # Get the last 5 tags by creation date (oldest -> newest so pushes are ordered)
+          # Choose last 5 tags by creation date (oldest -> newest so dependencies land first)
           mapfile -t TAGS < <(git for-each-ref --sort=creatordate --format='%(refname:strip=2)' refs/tags | tail -n 5)
 
           if (( ${#TAGS[@]} > 0 )); then
+            # Explicit, authenticated GitHub URL for LFS fetches (works despite persist-credentials:false)
+            GH_AUTH_URL="https://x-access-token:${{ inputs.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
 
-            git config lfs.allowincompletepush true
-            
-            # Make sure we have the tag objects locally (not just names)
-            git fetch --tags origin
-
-            # Be explicit with LFS and refs to avoid default filters skipping tags
             for t in "${TAGS[@]}"; do
               echo "Preparing LFS and pushing tag: $t"
 
-              # 1) Ensure LFS objects for this tag are present locally (explicit ref)
-              git lfs fetch origin "refs/tags/$t" --exclude="" --include="refs/tags/$t" || true
+              # 1) Fetch *LFS objects* for this tag from GitHub (explicit ref; disable filters)
+              git lfs fetch "$GH_AUTH_URL" "refs/tags/$t" --include="refs/tags/$t" --exclude=""
 
-              # 2) Pre-upload the LFS objects for this tag to the OpenCoDE remote
-              #    This populates the server so the subsequent ref update passes the hook.
+              # 2) Pre-upload the LFS objects for this tag to OpenCoDE (so server hook passes)
               git lfs push opencode "refs/tags/$t"
 
-              # 3) Now push the tag itself
+              # 3) Push the tag ref itself
               git push opencode -f "$t"
             done
           else
             echo "No tags found; skipping tag pushes."
           fi
+
 
         else
           echo "Default: pushing all branches and all tags"
