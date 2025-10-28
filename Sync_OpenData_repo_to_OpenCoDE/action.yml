@@ -119,10 +119,36 @@ runs:
           echo "Skipping LFS pull (not installed or not used)."
         fi
 
-    - name: Force push latest Github Open Data repository status to OpenCoDE
+    - name: Push to OpenCoDE (special LFS handling for selected repos)
       shell: bash
       run: |
-        # Force push latest Github Open Data repository status to OpenCoDE
-        git remote add opencode https://${{ inputs.ACCESS_USER  }}:${{ inputs.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ env.GROUP_PATH }}/${{ env.REPO_PATH_GITLAB}}.git
-        git push opencode -f
-        git push opencode -f --tags
+        set -euo pipefail
+
+        # Ensure fresh remote (token may rotate)
+        git remote remove opencode 2>/dev/null || true
+        git remote add opencode "https://${{ inputs.ACCESS_USER }}:${{ inputs.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ env.GROUP_PATH }}/${{ env.REPO_PATH_GITLAB }}.git"
+
+        REPO_LOWER="$(echo "${{ env.REPO_PATH_GITLAB }}" | tr '[:upper:]' '[:lower:]')"
+
+        if [[ "$REPO_LOWER" == "sars-cov-2-infektionen_in_deutschland" ]] \
+          || [[ "$REPO_LOWER" == "burden_2020-krankheitslast_in_deutschland_und_seinen_regionen" ]] \
+          || [[ "$REPO_LOWER" == "sars-cov-2-sequenzdaten_aus_deutschland" ]]; then
+
+          echo "Special-case: pushing branch and last 5 tags for $REPO_LOWER"
+
+          git push opencode -f "${{ inputs.BRANCH }}:${{ inputs.BRANCH }}"
+          mapfile -t TAGS < <(git for-each-ref --sort=creatordate --format='%(refname:strip=2)' refs/tags | tail -n 5)
+          if (( ${#TAGS[@]} > 0 )); then
+            git config lfs.allowincompletepush true
+            for t in "${TAGS[@]}"; do
+              echo "Pushing tag: $t"
+              git push opencode -f "$t" || echo "Warning: failed to push tag $t"
+            done
+          fi
+
+        else
+          echo "Default: pushing all branches and all tags"
+          git push opencode -f
+          git push opencode -f --tags
+        fi
+
