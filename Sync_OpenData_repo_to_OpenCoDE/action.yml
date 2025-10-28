@@ -140,6 +140,7 @@ runs:
           if (( ${#TAGS[@]} > 0 )); then
             git config lfs.allowincompletepush true
             for t in "${TAGS[@]}"; do
+              git lfs fetch origin "$t" || true
               echo "Pushing tag: $t"
               git push opencode -f "$t" || echo "Warning: failed to push tag $t"
             done
