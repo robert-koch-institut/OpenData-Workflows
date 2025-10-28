@@ -136,7 +136,6 @@ runs:
 
           echo "Special-case: pushing branch and last 5 tags for $REPO_LOWER"
 
-          git push opencode -f "${{ inputs.BRANCH }}:${{ inputs.BRANCH }}"
           mapfile -t TAGS < <(git for-each-ref --sort=creatordate --format='%(refname:strip=2)' refs/tags | tail -n 5)
           if (( ${#TAGS[@]} > 0 )); then
             git config lfs.allowincompletepush true
