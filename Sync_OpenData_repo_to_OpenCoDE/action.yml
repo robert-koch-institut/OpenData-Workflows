@@ -136,20 +136,28 @@ runs:
 
           echo "Special-case: pushing last 5 tags only for $REPO_LOWER"
 
-          # Choose last 5 tags by creation date (oldest -> newest so dependencies land first)
+          # Last 5 tags by creation date (oldest->newest so dependencies land first)
           mapfile -t TAGS < <(git for-each-ref --sort=creatordate --format='%(refname:strip=2)' refs/tags | tail -n 5)
 
           if (( ${#TAGS[@]} > 0 )); then
-            # Explicit, authenticated GitHub URL for LFS fetches (works despite persist-credentials:false)
-            GH_AUTH_URL="https://x-access-token:${{ inputs.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+            # Ensure we have tag objects locally
+            git fetch --tags origin
+
+            # Re-enable authenticated GitHub access for LFS fetches despite persist-credentials:false
+            # Safer than putting token in command line: rewrite https://github.com/* to include the token.
+            git config --local url."https://x-access-token:${{ inputs.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
+            # (Optional but useful): be explicit that we won’t filter out tag refs
+            git config --local lfs.fetchinclude ""
+            git config --local lfs.fetchexclude ""
 
             for t in "${TAGS[@]}"; do
               echo "Preparing LFS and pushing tag: $t"
 
-              # 1) Fetch *LFS objects* for this tag from GitHub (explicit ref; disable filters)
-              git lfs fetch "$GH_AUTH_URL" "refs/tags/$t" --include="refs/tags/$t" --exclude=""
+              # 1) Download the exact LFS blobs needed by this tag from GitHub (now authenticated)
+              git lfs fetch "https://github.com/${{ github.repository }}.git" "refs/tags/$t" --include="refs/tags/$t" --exclude=""
 
-              # 2) Pre-upload the LFS objects for this tag to OpenCoDE (so server hook passes)
+              # 2) Pre-upload those blobs to the OpenCoDE remote so GitLab's hook is satisfied
               git lfs push opencode "refs/tags/$t"
 
               # 3) Push the tag ref itself
