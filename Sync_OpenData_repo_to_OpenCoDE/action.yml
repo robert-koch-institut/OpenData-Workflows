@@ -134,16 +134,34 @@ runs:
           || [[ "$REPO_LOWER" == "burden_2020-krankheitslast_in_deutschland_und_seinen_regionen" ]] \
           || [[ "$REPO_LOWER" == "sars-cov-2-sequenzdaten_aus_deutschland" ]]; then
 
-          echo "Special-case: pushing branch and last 5 tags for $REPO_LOWER"
+          echo "Special-case: pushing last 5 tags only for $REPO_LOWER"
 
+          # Get the last 5 tags by creation date (oldest -> newest so pushes are ordered)
           mapfile -t TAGS < <(git for-each-ref --sort=creatordate --format='%(refname:strip=2)' refs/tags | tail -n 5)
+
           if (( ${#TAGS[@]} > 0 )); then
+
             git config lfs.allowincompletepush true
+            
+            # Make sure we have the tag objects locally (not just names)
+            git fetch --tags origin
+
+            # Be explicit with LFS and refs to avoid default filters skipping tags
             for t in "${TAGS[@]}"; do
-              git lfs fetch origin "$t" || true
-              echo "Pushing tag: $t"
-              git push opencode -f "$t" || echo "Warning: failed to push tag $t"
+              echo "Preparing LFS and pushing tag: $t"
+
+              # 1) Ensure LFS objects for this tag are present locally (explicit ref)
+              git lfs fetch origin "refs/tags/$t" --exclude="" --include="refs/tags/$t" || true
+
+              # 2) Pre-upload the LFS objects for this tag to the OpenCoDE remote
+              #    This populates the server so the subsequent ref update passes the hook.
+              git lfs push opencode "refs/tags/$t"
+
+              # 3) Now push the tag itself
+              git push opencode -f "$t"
             done
+          else
+            echo "No tags found; skipping tag pushes."
           fi
 
         else
