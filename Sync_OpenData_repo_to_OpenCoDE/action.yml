@@ -131,6 +131,7 @@ runs:
           || [[ "$REPO_LOWER" == "sars-cov-2-sequenzdaten_aus_deutschland" ]]; then
 
           echo "LFS sync to opencode currently not working, skipping push to opencode for $REPO_LOWER"
+          exit 1
 
         else
 
