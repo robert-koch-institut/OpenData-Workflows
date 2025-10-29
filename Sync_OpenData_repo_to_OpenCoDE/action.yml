@@ -124,76 +124,19 @@ runs:
       run: |
         set -euo pipefail
 
-        # Ensure fresh remote (token may rotate)
-        git remote remove opencode 2>/dev/null || true
-        git remote add opencode "https://${{ inputs.ACCESS_USER }}:${{ inputs.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ env.GROUP_PATH }}/${{ env.REPO_PATH_GITLAB }}.git"
-
         REPO_LOWER="$(echo "${{ env.REPO_PATH_GITLAB }}" | tr '[:upper:]' '[:lower:]')"
 
         if [[ "$REPO_LOWER" == "sars-cov-2-infektionen_in_deutschland" ]] \
           || [[ "$REPO_LOWER" == "burden_2020-krankheitslast_in_deutschland_und_seinen_regionen" ]] \
           || [[ "$REPO_LOWER" == "sars-cov-2-sequenzdaten_aus_deutschland" ]]; then
 
-          echo "Special-case: pushing last N tags only for $REPO_LOWER"
-
-          # Number of tags to push
-          N=1
-
-          # Re-authenticate origin so both 'git fetch' and 'git lfs fetch' can access GitHub
-          git remote set-url origin "https://x-access-token:${{ inputs.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-
-          # Last N tags by creation date (oldest -> newest so prerequisites land first)
-          mapfile -t TAGS < <(git for-each-ref --sort=creatordate --format='%(refname:strip=2)' refs/tags | tail -n "$N")
-
-          if (( ${#TAGS[@]} > 0 )); then
-            # Be explicit: do not filter out tag refs for LFS
-            git config --local lfs.fetchinclude ""
-            git config --local lfs.fetchexclude ""
-
-            # Robustness for big uploads (to reduce the risk of a timeout)
-            git config --local lfs.concurrenttransfers 1
-            git config --local lfs.transfer.maxretries 8
-            git config --local http.lowSpeedLimit 1          # tolerate tiny throughput
-            git config --local http.lowSpeedTime 1800        # 30 min idle window
-            export GIT_LFS_ACTIVITY_TIMEOUT=1800
-            export GIT_LFS_TRANSFER_MAX_RETRIES=8
-
-            retry() {  # retry <max_attempts> <cmd...>
-              local max=$1; shift
-              local n=1; local delay=10
-              until "$@"; do
-                if (( n >= max )); then return 1; fi
-                echo "Retry $n/$max failed; sleeping ${delay}s..."
-                sleep "$delay"
-                delay=$(( delay * 2 ))
-                (( n++ ))
-              done
-            }
-
-            for t in "${TAGS[@]}"; do
-              echo "Preparing LFS and pushing tag: $t"
-
-              # 1) Ensure tag object is present
-              git fetch --no-tags --depth=1 origin tag "$t"
-
-              # 2) Fetch the exact LFS blobs for this tag from GitHub
-              git lfs fetch origin "refs/tags/$t" --include="refs/tags/$t" --exclude=""
-
-              # 3) Pre-upload LFS for this tag to OpenCoDE (with retries)
-              retry 5 git lfs push opencode "refs/tags/$t"
-
-              # 4) Push the tag itself
-              retry 3 git push opencode -f "$t" || echo "Warning: failed to push tag $t"
-            done
-
-          else
-            echo "No tags found; skipping tag pushes."
-
-          fi
+          echo "LFS sync to opencode currently not working, skipping push to opencode for $REPO_LOWER"
 
         else
+
           echo "Default: pushing all branches and all tags"
           git push opencode -f
           git push opencode -f --tags
+        
         fi
 
