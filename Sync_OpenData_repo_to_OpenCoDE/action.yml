@@ -136,37 +136,39 @@ runs:
 
           echo "Special-case: pushing last 5 tags only for $REPO_LOWER"
 
-          # Last 5 tags by creation date (oldest->newest so dependencies land first)
+          # Re-authenticate origin so both 'git fetch' and 'git lfs fetch' can access GitHub
+          git remote set-url origin "https://x-access-token:${{ inputs.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+
+          # Last 5 tags by creation date (oldest -> newest so prerequisites land first)
           mapfile -t TAGS < <(git for-each-ref --sort=creatordate --format='%(refname:strip=2)' refs/tags | tail -n 5)
 
           if (( ${#TAGS[@]} > 0 )); then
-            # Ensure we have tag objects locally
-            git fetch --tags origin
-
-            # Re-enable authenticated GitHub access for LFS fetches despite persist-credentials:false
-            # Safer than putting token in command line: rewrite https://github.com/* to include the token.
-            git config --local url."https://x-access-token:${{ inputs.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
-
-            # (Optional but useful): be explicit that we won’t filter out tag refs
+            # Be explicit: do not filter out tag refs for LFS
             git config --local lfs.fetchinclude ""
             git config --local lfs.fetchexclude ""
 
             for t in "${TAGS[@]}"; do
               echo "Preparing LFS and pushing tag: $t"
 
-              # 1) Download the exact LFS blobs needed by this tag from GitHub (now authenticated)
-              git lfs fetch "https://github.com/${{ github.repository }}.git" "refs/tags/$t" --include="refs/tags/$t" --exclude=""
+              # 1) Ensure the tag object exists locally (shallow fetch is enough)
+              git fetch --no-tags --depth=1 origin "tag" "$t"
 
-              # 2) Pre-upload those blobs to the OpenCoDE remote so GitLab's hook is satisfied
-              git lfs push opencode "refs/tags/$t"
+              # 2) Fetch the LFS blobs needed by this tag from GitHub (authenticated origin)
+              #    Using the tag name as the refspec is sufficient; no need for refs/tags/<t>
+              git lfs fetch origin "$t"
 
-              # 3) Push the tag ref itself
+              # (Optional: sanity check — list any missing objects that would block upload)
+              # git lfs ls-files --all | grep -E '\(missing\)' && echo "Warning: still missing LFS after fetch"
+
+              # 3) Pre-upload those blobs to the OpenCoDE remote so the server hook passes
+              git lfs push opencode "$t"
+
+              # 4) Now push the tag ref itself
               git push opencode -f "$t"
             done
           else
             echo "No tags found; skipping tag pushes."
           fi
-
 
         else
           echo "Default: pushing all branches and all tags"
