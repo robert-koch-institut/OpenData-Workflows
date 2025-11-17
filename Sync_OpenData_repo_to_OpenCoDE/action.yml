@@ -136,6 +136,7 @@ runs:
         else
 
           echo "Default: pushing all branches and all tags"
+          git remote add opencode https://${{ inputs.ACCESS_USER  }}:${{ inputs.OPENCODE_TOKEN }}@gitlab.opencode.de/${{ env.GROUP_PATH }}/${{ env.REPO_PATH_GITLAB}}.git
           git push opencode -f
           git push opencode -f --tags
         
