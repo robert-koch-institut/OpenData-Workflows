@@ -38,6 +38,10 @@ on:
         type: string
         required: false
         default: knutator/Metadaten_Test
+      GOVDATA_METADATA_PATH:
+        description: path where the metadata for govdata is stored
+        type: string
+        default: Metadaten/govdata.ttl
       NFDI4HEALTH_ACTIVE:
         description: true, if metadata should be pushed to NFDI4Health
         type: boolean
@@ -118,6 +122,7 @@ jobs:
         with:
           govdata_github_token: ${{secrets.GOVDATA_GITHUB_TOKEN}}
           destination_repo: ${{inputs.GOVDATA_DESTINATION_REPO}}
+          source_file:  ${{inputs.GOVDATA_METADATA_PATH}}
             
   # # Job syncs repository with OpenCoDE.de
   sync_to_open_code:
