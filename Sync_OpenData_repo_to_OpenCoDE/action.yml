@@ -86,9 +86,9 @@ runs:
         response=$(curl \
           --request PUT "https://gitlab.opencode.de/api/v4/projects/${{ env.GROUP_PATH_URLENCODE }}%2F${{ env.REPO_PATH_GITLAB }}" \
           --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}" \
-          --data-urlencode "name=${{ env.REPO_NAME }}" \
-          --data-urlencode "description=${{ env.DESCRIPTION }}" \
-          --data-urlencode "topics=${{ env.TOPICS }}")
+          --data-urlencode name="${{ env.REPO_NAME }}" \
+          --data-urlencode description="${{ env.DESCRIPTION }}" \
+          --data-urlencode topics="${{ env.TOPICS }}")
         echo "$response"
 
     - name: Make OpenCoDE repository public
