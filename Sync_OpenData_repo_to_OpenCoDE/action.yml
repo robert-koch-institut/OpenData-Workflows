@@ -83,11 +83,12 @@ runs:
       shell: bash
       run: |
         # Update OpenCoDE repository metadata
+        DESCRIPTION='${{ env.DESCRIPTION }}'
         response=$(curl \
           --request PUT "https://gitlab.opencode.de/api/v4/projects/${{ env.GROUP_PATH_URLENCODE }}%2F${{ env.REPO_PATH_GITLAB }}" \
           --header "PRIVATE-TOKEN: ${{ inputs.OPENCODE_TOKEN }}" \
           --data-urlencode "name=${{ env.REPO_NAME }}" \
-          --data-urlencode description="${{ env.DESCRIPTION }}" \
+          --data-urlencode description="$DESCRIPTION" \
           --data-urlencode "topics=${{ env.TOPICS }}")
         echo "$response"
 
