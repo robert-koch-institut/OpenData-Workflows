@@ -88,7 +88,7 @@ runs:
     - name: Publish dataset at Studyhub
       uses: fjogeleit/http-request-action@v1
       with:
-        url: ${{format('{0}{1}{2}{3}', inputs.nfdi4health_base_url, 'resource/', fromJson(steps.createOrModify.outputs.response).resource.identifier, '/publish')}}
+        url: ${{format('{0}{1}{2}{3}', inputs.nfdi4health_base_url, 'resource/', fromJson(steps.createOrModify.outputs.response).resource.identifier, '/approve')}}
         customHeaders: '{"Content-Type": "application/json", "Accept": "application/json"}'
         bearerToken: ${{steps.nfdi4healthToken.outputs.token}}
         timeout: 60000
