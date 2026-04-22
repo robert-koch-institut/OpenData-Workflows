@@ -36,35 +36,49 @@ runs:
     - name: Read nfdi4health.json content
       id: nfdi4healthData
       run: |
-        content=`cat ${{inputs.nfdi4health_metadata_path}}`
-        # the following lines are only required for multi line json
-        content=${content//%/%25}
-        content=${content//$n/%0A}
-        content=${content//$r/%0D}
-        # end of optional handling for multi line json
-        echo "jsonContent<<EOF"$'\n'"$content"$'\n'EOF >> $GITHUB_OUTPUT
+        content="$(cat "${{ inputs.nfdi4health_metadata_path }}")"
+        {
+          echo 'jsonContent<<EOF'
+          echo "$content"
+          echo 'EOF'
+        } >> "$GITHUB_OUTPUT"
+      shell: bash
+
+    - name: Build request body
+      id: requestBody
+      run: |
+        body="$(jq -cn \
+          --argjson resource '${{ steps.nfdi4healthData.outputs.jsonContent }}' \
+          --arg host_collection "Robert_Koch_Institute" \
+          '{resource: $resource, host_collection: [$host_collection]}')"
+
+        {
+          echo 'jsonBody<<EOF'
+          echo "$body"
+          echo 'EOF'
+        } >> "$GITHUB_OUTPUT"
       shell: bash
 
     - name: Get Api Token
       id: nfdi4healthToken
       run: |
-        TOKEN=$(curl --location '${{inputs.nfdi4health_authorization_endpoint}}' \
+        TOKEN=$(curl --location '${{ inputs.nfdi4health_authorization_endpoint }}' \
                   --header 'Content-Type: application/x-www-form-urlencoded' \
-                  --data-urlencode 'client_id=${{inputs.nfdi4health_client_id}}' \
-                  --data-urlencode 'client_secret=${{inputs.nfdi4health_client_secret}}' \
+                  --data-urlencode 'client_id=${{ inputs.nfdi4health_client_id }}' \
+                  --data-urlencode 'client_secret=${{ inputs.nfdi4health_client_secret }}' \
                   --data-urlencode 'grant_type=client_credentials' | jq --raw-output '.access_token')
-        echo "token=$TOKEN" >> $GITHUB_OUTPUT
+        echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
       shell: bash
 
     - name: Create or modify NFDI4Health resource on Studyhub
       id: createOrModify
       uses: fjogeleit/http-request-action@v1
       with:
-        url: ${{format('{0}{1}', inputs.nfdi4health_base_url, 'resource/')}}
-        method: 'POST'
+        url: ${{ format('{0}{1}', inputs.nfdi4health_base_url, 'resource/') }}
+        method: POST
         customHeaders: '{"Content-Type": "application/json", "Accept": "application/json"}'
-        bearerToken: ${{steps.nfdi4healthToken.outputs.token}}
-        data: ${{steps.nfdi4healthData.outputs.jsonContent}}
+        bearerToken: ${{ steps.nfdi4healthToken.outputs.token }}
+        data: ${{ steps.requestBody.outputs.jsonBody }}
         timeout: 60000
 
     - name: Write id to nfdi4health.json
