@@ -103,7 +103,7 @@ runs:
         echo "$response"
         
     - name: Checkout Github repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         persist-credentials: false
         ref: ${{ inputs.BRANCH }}

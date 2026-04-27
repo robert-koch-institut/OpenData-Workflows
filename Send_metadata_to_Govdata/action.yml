@@ -29,7 +29,7 @@ runs:
   steps:
   
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
 
     - name: Rename ttl with reponame
       run: cp ${{ inputs.source_file }} ${{inputs.destination_file_name}}
