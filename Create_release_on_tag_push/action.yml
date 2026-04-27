@@ -1,9 +1,14 @@
 name: Create release on tag push
-description: test
+description: Creates a new Github Release
+
 inputs:
   REF_NAME:
     description: ref name
     required: true
+  GITHUB_TOKEN:
+    description: github token
+    required: true
+
 runs:
   using: "composite"
   steps:
@@ -11,10 +16,11 @@ runs:
       uses: actions/checkout@v6
 
     - name: Create Release
-      uses: actions/create-release@v1
-      with:
-        tag_name: ${{inputs.REF_NAME}}
-        release_name: Publikation ${{inputs.REF_NAME}}
-        body: Publikation der Version ${{inputs.REF_NAME}} inklusive aktualisierter Metadaten
-        draft: false
-        prerelease: false
+      env:
+        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+      run: |
+        gh release create "${{ inputs.REF_NAME }}" \
+          --title "Publikation ${{ inputs.REF_NAME }}" \
+          --notes "Publikation der Version ${{ inputs.REF_NAME }} inklusive aktualisierter Metadaten" \
+          --target "$GITHUB_SHA"
+      shell: bash
