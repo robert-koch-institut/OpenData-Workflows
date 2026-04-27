@@ -48,9 +48,9 @@ runs:
       id: requestBody
       run: |
         body="$(jq -cn \
-          --argjson resource '${{ steps.nfdi4healthData.outputs.jsonContent }}' \
+          --argjson input '${{ steps.nfdi4healthData.outputs.jsonContent }}' \
           --arg host_collection "Robert_Koch_Institute" \
-          '{resource: $resource, host_collection: [$host_collection]}')"
+          '{resource: $input.resource, host_collection: $host_collection}')"
 
         {
           echo 'jsonBody<<EOF'
