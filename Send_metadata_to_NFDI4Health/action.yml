@@ -72,20 +72,36 @@ runs:
 
     - name: Create or modify NFDI4Health resource on Studyhub
       id: createOrModify
-      uses: fjogeleit/http-request-action@v1
-      with:
-        url: ${{ format('{0}{1}', inputs.nfdi4health_base_url, 'resource/') }}
-        method: POST
-        customHeaders: '{"Content-Type": "application/json", "Accept": "application/json"}'
-        bearerToken: ${{ steps.nfdi4healthToken.outputs.token }}
-        data: ${{ steps.requestBody.outputs.jsonBody }}
-        timeout: 60000
+      run: |
+        response=$(curl -s -w "\n%{http_code}" -X POST "${{ format('{0}{1}', inputs.nfdi4health_base_url, 'resource/') }}" \
+          -H "Authorization: Bearer ${{ steps.nfdi4healthToken.outputs.token }}" \
+          -H "Content-Type: application/json" \
+          -H "Accept: application/json" \
+          -d '${{ steps.requestBody.outputs.jsonBody }}')
+
+        body=$(echo "$response" | head -n -1)
+        status=$(echo "$response" | tail -n1)
+
+        echo "HTTP status: $status"
+
+        if [ "$status" -ge 300 ]; then
+          echo "Request failed:"
+          echo "$body"
+          exit 1
+        fi
+
+        {
+          echo 'response<<EOF'
+          echo "$body"
+          echo 'EOF'
+        } >> "$GITHUB_OUTPUT"
+      shell: bash
 
     - name: Write id to nfdi4health.json
       id: updateMetadata
-      if: ${{fromJson(steps.nfdi4healthData.outputs.jsonContent).resource.identifier == null}}
+      if: ${{ fromJson(steps.nfdi4healthData.outputs.jsonContent).resource.identifier == null }}
       run: |
-        echo "`jq '.resource.identifier="${{fromJson(steps.createOrModify.outputs.response).resource.identifier}}"' ${{inputs.nfdi4health_metadata_path}} `" > ${{inputs.nfdi4health_metadata_path}}
+        echo "`jq '.resource.identifier="${{ fromJson(steps.createOrModify.outputs.response).resource.identifier }}"' ${{ inputs.nfdi4health_metadata_path }} `" > ${{ inputs.nfdi4health_metadata_path }}
       shell: bash
 
     - name: Echo JSON
@@ -100,11 +116,11 @@ runs:
         add: '${{inputs.nfdi4health_metadata_path}}'
 
     - name: Publish dataset at Studyhub
-      uses: fjogeleit/http-request-action@v1
-      with:
-        url: ${{format('{0}{1}{2}{3}', inputs.nfdi4health_base_url, 'resource/', fromJson(steps.createOrModify.outputs.response).resource.identifier, '/approve')}}
-        customHeaders: '{"Content-Type": "application/json", "Accept": "application/json"}'
-        bearerToken: ${{steps.nfdi4healthToken.outputs.token}}
-        timeout: 60000
+      run: |
+        identifier="${{ fromJson(steps.createOrModify.outputs.response).resource.identifier }}"
 
-
+        curl -s -X POST "${{ inputs.nfdi4health_base_url }}resource/${identifier}/approve" \
+          -H "Authorization: Bearer ${{ steps.nfdi4healthToken.outputs.token }}" \
+          -H "Content-Type: application/json" \
+          -H "Accept: application/json"
+      shell: bash
